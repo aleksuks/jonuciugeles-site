@@ -6,6 +6,8 @@ import { defineConfig } from 'vite';
 const env = (globalThis as { process?: { env: Record<string, string | undefined> } }).process?.env ?? {};
 const stable = env.FLOWERS_STABLE === '1';
 
+// PAGES_BASE (set by the GitHub Pages workflow) is the repo sub-path, e.g. /jonuciugeles-site/. Locally it is '/'.
 export default defineConfig({
+  base: env.PAGES_BASE ?? '/',
   server: { host: true, port: 5173, ...(stable ? { hmr: false, watch: null } : {}) },
 });
