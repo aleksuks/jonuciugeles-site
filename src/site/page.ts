@@ -1,4 +1,5 @@
 import { connected, readForm, send, validate, type Errors } from './inquiry';
+import { loadReviews } from './reviews';
 
 interface Hooks {
   loosen(amount: number): void;
@@ -27,6 +28,7 @@ export function initSite(h: Hooks): void {
   onScroll();
 
   openNow();
+  void loadReviews();
   actionBar();
   orderForm(h, (b) => { breathing = b; h.loosen(b); });
 }

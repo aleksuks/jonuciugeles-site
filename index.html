@@ -42,8 +42,8 @@
           <span>Jonučių gėlės</span>
         </a>
         <nav class="nav__links" aria-label="Puslapio skyriai">
-          <a href="#lankykites" data-bouquet="spin">Lankykitės</a>
-          <a href="#geles" data-bouquet="spin">Gėlės</a>
+          <a href="#mes-esame" data-bouquet="spin">Mes esame</a>
+          <a href="#paslaugos" data-bouquet="spin">Paslaugos</a>
           <a href="#uzsakymas" data-bouquet="spin">Užsakymas</a>
         </nav>
         <a class="btn btn--small" href="tel:+37066706022" data-bouquet="loosen">Skambinti</a>
@@ -54,20 +54,21 @@
       <section class="sec hero" data-stage="assembled" aria-labelledby="hero-h">
         <div class="wrap hero__grid">
           <div class="hero__text">
-            <h1 id="hero-h">Gėlių parduotuvė Teleičiuose</h1>
+            <h1 id="hero-h">Gėlės jūsų progoms</h1>
             <p class="lede">Gėlės, puokštės, augalai ir dovanos. Užsakymai su pristatymu. Dirbame kasdien.</p>
             <div class="actions">
               <a class="btn" href="#uzsakymas" data-bouquet="loosen" id="hero-cta">Užsakyti puokštę</a>
-              <a class="link" href="#lankykites" data-bouquet="spin">Kaip mus rasti</a>
+              <a class="link" href="#mes-esame" data-bouquet="spin">Kaip mus rasti</a>
             </div>
+            <a class="rating" href="https://www.google.com/maps/place/Jonu%C4%8Di%C5%B3+g%C4%97l%C4%97s/@54.8387314,23.8808244,237m/data=!3m1!1e3!4m6!3m5!1s0x46e723006fa47983:0x4c372466fd9645df!8m2!3d54.8387418!4d23.8810115!16s%2Fg%2F11y3w_hl55" target="_blank" rel="noopener"><span class="rating__star" aria-hidden="true">★</span> <span data-rating>4,6</span> Google atsiliepimuose</a>
           </div>
           <div class="stage-slot hero__slot" aria-hidden="true"></div>
         </div>
       </section>
 
-      <section class="sec visit" id="lankykites" aria-labelledby="visit-h">
+      <section class="sec visit" id="mes-esame" aria-labelledby="visit-h">
         <div class="wrap">
-          <h2 id="visit-h">Lankykitės</h2>
+          <h2 id="visit-h">Mes esame</h2>
           <p class="type-moment"><a href="https://www.google.com/maps/place/Jonu%C4%8Di%C5%B3+g%C4%97l%C4%97s/@54.8387314,23.8808244,237m/data=!3m1!1e3!4m6!3m5!1s0x46e723006fa47983:0x4c372466fd9645df!8m2!3d54.8387418!4d23.8810115!16s%2Fg%2F11y3w_hl55" target="_blank" rel="noopener">Artojų g.&nbsp;12, Teleičiai</a></p>
           <div class="grid visit__grid">
             <div class="visit__panel">
@@ -93,23 +94,35 @@
         </div>
       </section>
 
-      <section class="sec offer" id="geles" data-stage="exploded" aria-labelledby="offer-h">
+      <section class="sec offer" id="paslaugos" data-stage="exploded" aria-labelledby="offer-h">
         <div class="wrap offer__grid">
           <div class="offer__text">
-            <h2 id="offer-h">Ką jums surišime</h2>
-            <dl class="rows">
-              <div><dt>Puokštės vietoje</dt><dd>Išsirinkite, surišime iškart.</dd></div>
-              <div><dt>Pagal užsakymą</dt><dd>Jūsų progai, spalvoms ir biudžetui.</dd></div>
-              <div><dt>Lietuviškos rožės ir tulpės</dt><dd>Sezono metu.</dd></div>
-              <div><dt>Pristatymas</dt><dd>Kainą suderiname užsakant.</dd></div>
-              <div><dt>Šventėms ir renginiams</dt><dd>Specialūs užsakymai. Vietoje nedekoruojame.</dd></div>
-            </dl>
-            <h3 class="also-h">Taip pat parduotuvėje</h3>
-            <ul class="also">
-              <li>Augalai</li><li>sukulentai</li><li>atvirukai</li><li>dovanėlės</li><li>dėžutės</li><li>dekoracijos</li><li>žaisliukai</li>
+            <h2 id="offer-h">Mūsų paslaugos</h2>
+            <ul class="rows">
+              <li>Gėlės, puokštės vietoje gyva eile</li>
+              <li>Atvirukai, augalai, žaisliukai, dekoracijos</li>
+              <li>Išankstiniai užsakymai</li>
+              <li>Pristatymas <span>Kaina derinama pagal vietą ir užsakymo dydį</span></li>
+              <li>Specialūs užsakymai švenčių ir renginių dekorui</li>
             </ul>
+            <p class="season">Lietuviškos rožės ir tulpės sezono metu</p>
+            <div class="partner">
+              <p>Prekiaujame namų kvapais</p>
+              <a href="https://www.aromatic89.lt/" target="_blank" rel="noopener"><img src="/partners/aromatic89.svg" alt="Aromatic 89" width="190" height="23" /></a>
+            </div>
           </div>
           <div class="stage-slot offer__slot" aria-hidden="true"></div>
+        </div>
+      </section>
+
+      <!-- Shown only when live Google reviews load (VITE_GOOGLE_MAPS_KEY, src/site/reviews.ts). -->
+      <section class="sec reviews" id="atsiliepimai" aria-labelledby="reviews-h" hidden>
+        <div class="wrap">
+          <div class="reviews__head">
+            <h2 id="reviews-h">Atsiliepimai</h2>
+            <a class="link" href="https://www.google.com/maps/place/Jonu%C4%8Di%C5%B3+g%C4%97l%C4%97s/@54.8387314,23.8808244,237m/data=!3m1!1e3!4m6!3m5!1s0x46e723006fa47983:0x4c372466fd9645df!8m2!3d54.8387418!4d23.8810115!16s%2Fg%2F11y3w_hl55" target="_blank" rel="noopener">Visi atsiliepimai Google</a>
+          </div>
+          <ul class="reviews__list"></ul>
         </div>
       </section>
 

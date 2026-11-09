@@ -68,9 +68,9 @@ async function run(browser, sc) {
   check('no sideways scroll', hero.overflow <= 0, hero.overflow);
   const shots = [await shot('hero')];
   if (!sc.heroOnly) {
-    await scrollTo('#lankykites');
+    await scrollTo('#mes-esame');
     shots.push(await shot('visit'));
-    await scrollTo('#geles');
+    await scrollTo('#paslaugos');
     const ex = await page.evaluate(() => ({ exploded: window.__flowers.bouquet.exploded, prog: window.__flowers.bouquet.explodeProgress }));
     check('bouquet loosens in the flowers section', ex.exploded && ex.prog > 0.8, `${ex.exploded} ${ex.prog.toFixed(2)}`);
     shots.push(await shot('offer'));
