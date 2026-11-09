@@ -64,9 +64,30 @@ async function run(browser, sc) {
   check('bouquet has 15+ flowers', hero.n >= 15, hero.n);
   check('bouquet gathered after intro', hero.prog < 0.08, hero.prog.toFixed(3));
   check('canvas visible in hero', hero.opacity === '1', hero.opacity);
-  check('ground sampled from canvas', /^#[0-9a-f]{6}$/.test(hero.ground) && hero.ground !== '#000000', hero.ground);
   check('no sideways scroll', hero.overflow <= 0, hero.overflow);
+  /** Canvas backdrop as rendered vs the page's --ground, per channel. */
+  const groundMatch = () => page.evaluate(() => {
+    const s = window.__flowers.stage;
+    s.render();
+    const got = s.sampleBackdrop();
+    const want = getComputedStyle(document.documentElement).getPropertyValue('--ground').trim();
+    const d = [1, 3, 5].map((i) => Math.abs(parseInt(got.slice(i, i + 2), 16) - parseInt(want.slice(i, i + 2), 16)));
+    return { got, want, d: Math.max(...d) };
+  });
+  const g0 = await groundMatch();
+  check('canvas backdrop matches page ground', g0.d <= 3, `${g0.got} vs ${g0.want}`);
   const shots = [await shot('hero')];
+  if (!sc.heroOnly) {
+    for (let i = 0; i < 4; i++) {
+      await page.click('[data-theme-next]');
+      await page.waitForTimeout(500);
+      await settle(0.2, 2);
+      const g = await groundMatch();
+      const theme = await page.evaluate(() => document.documentElement.dataset.theme);
+      check(`theme ${theme}: canvas matches ground`, g.d <= 3, `${g.got} vs ${g.want}`);
+      if (i < 3) shots.push(await shot(`theme-${theme}`));
+    }
+  }
   if (!sc.heroOnly) {
     await scrollTo('#mes-esame');
     shots.push(await shot('visit'));
@@ -80,6 +101,16 @@ async function run(browser, sc) {
     const op = await page.evaluate(() => getComputedStyle(document.getElementById('stage')).opacity);
     check('canvas hidden over the photos', op === '0', op);
     shots.push(await shot('work'));
+    const shown = () => page.$$eval('[data-wall] a', (as) => as.filter((a) => a.offsetParent).length);
+    const before = await shown();
+    await page.click('[data-wall-more]');
+    const after = await shown();
+    check('photo wall shows 12, then all', before === 12 && after > 40, `${before} -> ${after}`);
+    await page.click('[data-wall] a >> nth=0');
+    await page.waitForFunction(() => document.querySelector('.lightbox img')?.complete);
+    check('photo opens large', await page.evaluate(() => document.querySelector('.lightbox').open && document.querySelector('.lightbox img').naturalWidth > 1000));
+    shots.push(await shot('lightbox'));
+    await page.keyboard.press('Escape');
     await scrollTo('#uzsakymas');
     const asm = await page.evaluate(() => window.__flowers.bouquet.exploded);
     check('bouquet ties again at the form', asm === false, asm);

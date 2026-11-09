@@ -1,4 +1,4 @@
-import { Vector3 } from 'three';
+import { Color, Vector3, type Mesh, type MeshBasicMaterial } from 'three';
 import './site/styles.css';
 import { createStage } from './scene/stage';
 import { CameraRig, FRAME_RADIUS_EXPLODED } from './scene/cameraRig';
@@ -52,6 +52,7 @@ initSite({
   loosen: (on) => { loosenTarget = on; },
   spin: () => { spinTarget += 1.1; },
   flourish: () => { flourishUntil = performance.now() + 1100; },
+  recolour: () => { tuneBackdrop(); spinTarget += 0.8; },
 });
 
 // ---- framing: follow the stage-slot in view ----
@@ -72,9 +73,34 @@ let rect: Rect | null = null;
 let hiddenAt = 0;
 let lastSlot: HTMLElement | null = null;
 let envReady = false;
-let groundSampled = false;
-void stage.ready.then(() => { envReady = true; });
-stage.onQualityChange(() => { groundSampled = false; });
+void stage.ready.then(() => { envReady = true; tuneBackdrop(); });
+stage.onQualityChange(() => tuneBackdrop());
+
+// ---- the 3D backdrop is tuned until it renders exactly as the theme's --ground (tone mapping included) ----
+const tuned = new Map<string, Color>();
+function tuneBackdrop(): void {
+  if (!envReady) return;
+  const html = document.documentElement;
+  const hex = getComputedStyle(html).getPropertyValue('--ground').trim();
+  document.querySelector('meta[name="theme-color"]')?.setAttribute('content', hex);
+  // The brown contact shadow under the bouquet goes near-black on a dark ground.
+  const pool = stage.scene.getObjectByName('contactPool') as Mesh | undefined;
+  const target = new Color(hex);
+  (pool?.material as MeshBasicMaterial | undefined)?.color.setScalar(target.getHSL({ h: 0, s: 0, l: 0 }).l < 0.2 ? 0.3 : 1);
+  const key = `${hex}|${stage.quality}`;
+  const u = tuned.get(key)?.clone() ?? stage.backdrop.clone();
+  if (!tuned.has(key)) {
+    for (let i = 0; i < 8; i++) {
+      stage.setBackdrop(u);
+      stage.render();
+      const got = new Color(stage.sampleBackdrop());
+      const k = (t: number, g: number): number => Math.min(4, Math.max(0.25, t / Math.max(g, 1e-4)));
+      u.setRGB(u.r * k(target.r, got.r), u.g * k(target.g, got.g), u.b * k(target.b, got.b));
+    }
+    tuned.set(key, u.clone());
+  }
+  stage.setBackdrop(u);
+}
 stage.onResize((_w, _h, aspect) => rig.setAspect(aspect));
 
 let last = performance.now();
@@ -124,12 +150,6 @@ function frame(now: number): void {
   const show = envReady && !hiddenAt;
   if (envReady && (!hiddenAt || now - hiddenAt < 600)) {
     stage.render();
-    if (!groundSampled) {
-      const c = stage.sampleBackdrop();
-      document.documentElement.style.setProperty('--ground', c);
-      document.querySelector('meta[name="theme-color"]')?.setAttribute('content', c);
-      groundSampled = true;
-    }
   }
   canvas.style.opacity = show ? '1' : '0';
   requestAnimationFrame(frame);

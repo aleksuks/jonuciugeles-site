@@ -83,6 +83,9 @@ export interface Stage {
   render(): void;
   /** The backdrop colour as it reached the screen (tone mapping included), read from the canvas corner right after a render. */
   sampleBackdrop(): string;
+  /** Backdrop colour fed to the shader (linear, before tone mapping). */
+  readonly backdrop: Color;
+  setBackdrop(c: Color): void;
   setQuality(tier: QualityTier): void;
   /** Debug: switch the AO pass or the key light's shadow on or off independently of the tier. */
   debugToggle(what: 'ao' | 'shadow', on: boolean): void;
@@ -156,7 +159,9 @@ export function createStage(canvas: HTMLCanvasElement): Stage {
   const camera = new PerspectiveCamera(35, 1, 0.05, 150);
   camera.position.set(0, 1.0, 1.7);
 
-  scene.add(createBackdrop());
+  const backdrop = createBackdrop();
+  const backdropUniforms = (backdrop.material as ShaderMaterial).uniforms;
+  scene.add(backdrop);
 
   // Contact-shadow catcher: invisible except for shadows, so nothing but the soft shadow marks the floor.
   const floor = new Mesh(new PlaneGeometry(40, 40), new ShadowMaterial({ color: new Color('#7a5a3a'), opacity: 0.15 }));
@@ -371,6 +376,10 @@ export function createStage(canvas: HTMLCanvasElement): Stage {
       } else {
         renderer.render(scene, camera);
       }
+    },
+    get backdrop() { return backdropUniforms.mid.value as Color; },
+    setBackdrop(c) {
+      for (const k of ['top', 'mid', 'bottom']) (backdropUniforms[k].value as Color).copy(c);
     },
     sampleBackdrop() {
       const gl = renderer.getContext();
