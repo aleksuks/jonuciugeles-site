@@ -100,6 +100,8 @@ export class Bouquet implements BouquetApi {
   private readonly leaving: Leaving[] = [];
   private nextId = 1;
   private _exploded = false;
+  /** 0..1: an assembled bouquet eases this far toward its exploded slots (a breath, not an explosion). */
+  loosen = 0;
 
   constructor(opts: BouquetOptions) {
     this.scene = opts.scene;
@@ -175,18 +177,30 @@ export class Bouquet implements BouquetApi {
 
   // ---------------------------------------------------------------- building
 
-  addStarterBouquet(): void {
+  /** random: a different mix, count and colouring each time (seeded by the bouquet's rng). */
+  addStarterBouquet(opts: { random?: boolean } = {}): void {
     // Focal blooms first so they get the best spots; filler last, at the edges.
-    const order: VarietyId[] = [
+    let order: VarietyId[] = [
       'rose', 'peony', 'rose', 'peony', 'rose', 'peony', 'rose',
       'tulip', 'daisy', 'tulip', 'daisy', 'tulip', 'daisy',
       'eucalyptus', 'eucalyptus', 'eucalyptus', 'eucalyptus',
     ];
+    const rng = this.rng;
+    if (opts.random) {
+      const pick = (vs: VarietyId[], n: number): VarietyId[] => Array.from({ length: n }, () => vs[Math.floor(rng() * vs.length)]);
+      order = [
+        ...pick(['rose', 'peony'], 5 + Math.floor(rng() * 4)),
+        ...pick(['tulip', 'daisy', 'rose'], 4 + Math.floor(rng() * 4)),
+        ...pick(['eucalyptus'], 3 + Math.floor(rng() * 3)),
+      ];
+    }
     const used: Partial<Record<VarietyId, number>> = {};
+    const offset = opts.random ? Math.floor(rng() * 8) : 0;
     for (const v of order) {
       const n = used[v] ?? 0;
       used[v] = n + 1;
-      this.addInternal(v, n % Math.max(1, this.paletteCount(v)), false);
+      const k = opts.random && rng() < 0.35 ? Math.floor(rng() * 8) : n + offset;
+      this.addInternal(v, k % Math.max(1, this.paletteCount(v)), false);
     }
     this.relayout();
     this.events?.onChange?.();
@@ -284,7 +298,28 @@ export class Bouquet implements BouquetApi {
 
   // ---------------------------------------------------------------- explode
 
-  setExploded(on: boolean): void {
+  /**
+   * Intro: every flower starts scattered wide and spinning, gathers loosely, then ties into the bouquet,
+   * outer flowers last. Call right after addStarterBouquet.
+   */
+  gather(spread = 0.9): void {
+    const b = this.bindingPoint;
+    const rng = this.rng;
+    this._exploded = true;
+    for (const e of this.entries) {
+      const out = new Vector3().subVectors(e.exp.head, b).multiplyScalar(1.5 + rng() * 0.9);
+      const h = out.add(b).add(new Vector3((rng() - 0.5) * 0.5, 0.15 + rng() * 0.5, (rng() - 0.5) * 0.5));
+      e.head.snapTo(h);
+      e.root.snapTo(new Vector3().subVectors(e.exp.root, e.exp.head).add(h));
+      e.roll.x = (rng() - 0.5) * 7;
+      e.mode = true;
+      this.applyTargets(e);
+      this.pushPose(e, true);
+    }
+    this.setExploded(false, spread);
+  }
+
+  setExploded(on: boolean, stagger = TUNING.stagger): void {
     if (on === this._exploded) return;
     this._exploded = on;
     const sorted = [...this.entries].sort((a, b) => thetaOf(a, this.bindingPoint) - thetaOf(b, this.bindingPoint));
@@ -297,7 +332,7 @@ export class Bouquet implements BouquetApi {
       }
       const lead = on ? e.rank : 1 - e.rank; // inner first on explode, outer first on assemble
       e.pending = on;
-      e.delay = lead * TUNING.stagger + e.jitter;
+      e.delay = lead * stagger + e.jitter;
     }
     this.events?.onChange?.();
   }
@@ -418,6 +453,12 @@ export class Bouquet implements BouquetApi {
     e.head.target.copy(s.head);
     e.root.target.copy(s.root);
     e.roll.target = e.mode ? e.rollOffset : 0;
+    if (!e.mode && this.loosen > 0) {
+      const k = Math.min(1, this.loosen);
+      e.head.target.lerp(e.exp.head, k);
+      e.root.target.lerp(e.exp.root, k);
+      e.roll.target = e.rollOffset * k;
+    }
   }
 
   private pushPose(e: Entry, force: boolean): void {

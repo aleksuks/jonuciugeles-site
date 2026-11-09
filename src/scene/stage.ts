@@ -81,6 +81,8 @@ export interface Stage {
   /** The key light, so other modules can aim or tune it. */
   readonly keyLight: DirectionalLight;
   render(): void;
+  /** The backdrop colour as it reached the screen (tone mapping included), read from the canvas corner right after a render. */
+  sampleBackdrop(): string;
   setQuality(tier: QualityTier): void;
   /** Debug: switch the AO pass or the key light's shadow on or off independently of the tier. */
   debugToggle(what: 'ao' | 'shadow', on: boolean): void;
@@ -105,9 +107,10 @@ function createBackdrop(): Mesh {
     depthWrite: false,
     fog: false,
     uniforms: {
-      top: { value: new Color('#ffeedd') },
+      // Flat on purpose: the page around the canvas is one paper colour, sampled from this (see sampleBackdrop).
+      top: { value: new Color('#fde4c8') },
       mid: { value: new Color('#fde4c8') },
-      bottom: { value: new Color('#f6d9b8') },
+      bottom: { value: new Color('#fde4c8') },
     },
     vertexShader: /* glsl */ `
       varying vec3 vDir;
@@ -368,6 +371,13 @@ export function createStage(canvas: HTMLCanvasElement): Stage {
       } else {
         renderer.render(scene, camera);
       }
+    },
+    sampleBackdrop() {
+      const gl = renderer.getContext();
+      const px = new Uint8Array(4);
+      renderer.setRenderTarget(null);
+      gl.readPixels(2, gl.drawingBufferHeight - 3, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, px);
+      return '#' + [px[0], px[1], px[2]].map((v) => v.toString(16).padStart(2, '0')).join('');
     },
     setQuality(tier) {
       if (tier === quality && (TIER_SETTINGS[tier].composer === !!composer)) return;

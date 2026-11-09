@@ -22,6 +22,9 @@ export class CameraRig implements CameraRigApi {
   readonly target = new Vector3(0, 0.55, 0);
   azimuth = DEFAULT_VIEW.azimuth;
   polar = DEFAULT_VIEW.polar; // about 25 degrees above the horizon
+  /** Extra view angles added on top (pointer parallax); not clamped into azimuth/polar, so they never accumulate. */
+  offsetAz = 0;
+  offsetPol = 0;
 
   private zoom = 1;
   private zoomTarget = 1;
@@ -130,11 +133,13 @@ export class CameraRig implements CameraRigApi {
     }
     this.polar = this.clampPolar(this.polar);
     const d = this.distance;
-    const sp = Math.sin(this.polar);
+    const pol = this.clampPolar(this.polar + this.offsetPol);
+    const az = this.azimuth + this.offsetAz;
+    const sp = Math.sin(pol);
     this.camera.position.set(
-      this.target.x + d * sp * Math.sin(this.azimuth),
-      this.target.y + d * Math.cos(this.polar),
-      this.target.z + d * sp * Math.cos(this.azimuth),
+      this.target.x + d * sp * Math.sin(az),
+      this.target.y + d * Math.cos(pol),
+      this.target.z + d * sp * Math.cos(az),
     );
     this.camera.lookAt(this.target);
   }

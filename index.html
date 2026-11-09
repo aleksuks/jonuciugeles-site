@@ -1,21 +1,205 @@
 <!doctype html>
-<html lang="en">
+<html lang="lt">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
-    <meta name="theme-color" content="#f7e6cf" />
-    <title>Jonučių gėlės</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Jonučių gėlės: gėlių parduotuvė Teleičiuose</title>
+    <meta name="description" content="Gėlių parduotuvė Teleičiuose, Kauno r. Puokštės kasdien ir pagal užsakymą, pristatymas, užsakymai šventėms. Artojų g. 12." />
+    <meta name="theme-color" content="#fbe5cb" />
+    <link rel="canonical" href="https://jonuciugeles.lt/" />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="lt_LT" />
+    <meta property="og:title" content="Jonučių gėlės: gėlių parduotuvė Teleičiuose" />
+    <meta property="og:description" content="Puokštės kasdien ir pagal užsakymą, su pristatymu. Artojų g. 12, Teleičiai." />
+    <meta property="og:url" content="https://jonuciugeles.lt/" />
+    <meta property="og:image" content="https://jonuciugeles.lt/brand/lockup-olive.png" />
     <link rel="icon" type="image/png" href="/brand/mark-64.png" />
-    <style>
-      html, body { margin: 0; height: 100%; overflow: hidden; background: #f7e6cf; overscroll-behavior: none; }
-      #stage { position: fixed; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; outline: none; }
-      #ui { position: fixed; inset: 0; pointer-events: none; }
-      #ui > * { pointer-events: auto; }
-    </style>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Florist",
+        "name": "Jonučių gėlės",
+        "url": "https://jonuciugeles.lt/",
+        "telephone": "+3706706022",
+        "address": { "@type": "PostalAddress", "streetAddress": "Artojų g. 12", "addressLocality": "Teleičiai", "addressRegion": "Kauno r.", "addressCountry": "LT" },
+        "openingHoursSpecification": [
+          { "@type": "OpeningHoursSpecification", "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"], "opens": "07:30", "closes": "20:00" },
+          { "@type": "OpeningHoursSpecification", "dayOfWeek": "Saturday", "opens": "08:00", "closes": "20:00" },
+          { "@type": "OpeningHoursSpecification", "dayOfWeek": "Sunday", "opens": "09:00", "closes": "18:00" }
+        ]
+      }
+    </script>
   </head>
   <body>
-    <canvas id="stage"></canvas>
-    <div id="ui"></div>
+    <a class="skip" href="#turinys">Pereiti prie turinio</a>
+    <!-- 3D bouquet; frames itself into the .stage-slot in view, data-stage sets its state there. -->
+    <canvas id="stage" aria-hidden="true"></canvas>
+
+    <header class="nav">
+      <div class="wrap nav__in">
+        <a class="nav__brand" href="#" aria-label="Jonučių gėlės, į pradžią">
+          <img src="/brand/mark-olive.png" alt="" width="26" height="30" />
+          <span>Jonučių gėlės</span>
+        </a>
+        <nav class="nav__links" aria-label="Puslapio skyriai">
+          <a href="#lankykites" data-bouquet="spin">Lankykitės</a>
+          <a href="#geles" data-bouquet="spin">Gėlės</a>
+          <a href="#uzsakymas" data-bouquet="spin">Užsakymas</a>
+        </nav>
+        <a class="btn btn--small" href="tel:+3706706022" data-bouquet="loosen">Skambinti</a>
+      </div>
+    </header>
+
+    <main id="turinys">
+      <section class="sec hero" data-stage="assembled" aria-labelledby="hero-h">
+        <div class="wrap hero__grid">
+          <div class="hero__text">
+            <h1 id="hero-h">Gėlių parduotuvė Teleičiuose</h1>
+            <p class="lede">Puokštės vietoje, pagal užsakymą ir su pristatymu. Dirbame kasdien.</p>
+            <div class="actions">
+              <a class="btn" href="#uzsakymas" data-bouquet="loosen" id="hero-cta">Užsakyti puokštę</a>
+              <a class="link" href="#lankykites" data-bouquet="spin">Kaip mus rasti</a>
+            </div>
+          </div>
+          <div class="stage-slot hero__slot" aria-hidden="true"></div>
+        </div>
+      </section>
+
+      <section class="sec visit" id="lankykites" aria-labelledby="visit-h">
+        <div class="wrap">
+          <h2 id="visit-h">Lankykitės</h2>
+          <p class="type-moment"><a href="https://www.google.com/maps/search/?api=1&amp;query=Artoj%C5%B3%20g.%2012%2C%20Telei%C4%8Diai%2C%20Kauno%20r." target="_blank" rel="noopener">Artojų g.&nbsp;12, Teleičiai</a></p>
+          <div class="grid visit__grid">
+            <div class="visit__panel">
+              <p class="open-now" data-open-now></p>
+              <div class="visit__cols">
+                <div>
+                  <p class="visit__addr">Artojų g. 12<br />Teleičiai, Kauno r.</p>
+                  <p class="visit__addr"><a class="link" href="tel:+3706706022">+370 670 6022</a></p>
+                  <a class="btn btn--quiet" href="https://www.google.com/maps/dir/?api=1&amp;destination=Artoj%C5%B3%20g.%2012%2C%20Telei%C4%8Diai%2C%20Kauno%20r." target="_blank" rel="noopener" data-bouquet="loosen">Rodyti kelią</a>
+                </div>
+                <table class="hours" aria-label="Darbo laikas">
+                  <tbody>
+                    <tr data-days="1 2 3 4 5"><th scope="row">Darbo dienomis</th><td>7:30–20:00</td></tr>
+                    <tr data-days="6"><th scope="row">Šeštadieniais</th><td>8:00–20:00</td></tr>
+                    <tr data-days="0"><th scope="row">Sekmadieniais</th><td>9:00–18:00</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <!-- photo 4:3: shopfront. <img src="/photos/vitrina.jpg" alt="…" /> -->
+            <figure class="slot visit__photo" data-slot="vitrina" style="--r: 4/3"></figure>
+          </div>
+        </div>
+      </section>
+
+      <section class="sec offer" id="geles" data-stage="exploded" aria-labelledby="offer-h">
+        <div class="wrap offer__grid">
+          <div class="offer__text">
+            <h2 id="offer-h">Ką jums surišime</h2>
+            <dl class="rows">
+              <div><dt>Puokštės vietoje</dt><dd>Išsirinkite, surišime iškart.</dd></div>
+              <div><dt>Pagal užsakymą</dt><dd>Jūsų progai, spalvoms ir biudžetui.</dd></div>
+              <div><dt>Pristatymas</dt><dd>Kainą suderiname užsakant.</dd></div>
+              <div><dt>Šventėms ir renginiams</dt><dd>Specialūs užsakymai. Vietoje nedekoruojame.</dd></div>
+            </dl>
+          </div>
+          <div class="stage-slot offer__slot" aria-hidden="true"></div>
+        </div>
+      </section>
+
+      <section class="sec work" id="darbai" aria-labelledby="work-h">
+        <div class="wrap">
+          <h2 id="work-h">Iš mūsų parduotuvės</h2>
+          <!-- photos: one <img> per slot, files in public/photos/ -->
+          <div class="grid trio">
+            <figure class="slot span-5" data-slot="darbas-1" style="--r: 4/5"></figure>
+            <figure class="slot span-4" data-slot="darbas-2" style="--r: 1/1"></figure>
+            <figure class="slot span-3" data-slot="darbas-3" style="--r: 4/3"></figure>
+          </div>
+          <div class="grid strip">
+            <figure class="slot span-3" data-slot="detale-1" style="--r: 1/1"></figure>
+            <figure class="slot span-3" data-slot="detale-2" style="--r: 1/1"></figure>
+            <figure class="slot span-3" data-slot="detale-3" style="--r: 1/1"></figure>
+            <figure class="slot span-3" data-slot="detale-4" style="--r: 1/1"></figure>
+          </div>
+        </div>
+      </section>
+
+      <section class="sec order" id="uzsakymas" data-stage="assembled" aria-labelledby="order-h">
+        <div class="wrap order__grid">
+          <div class="order__text">
+            <h2 id="order-h">Užsakykite puokštę</h2>
+            <p class="lede">Arba skambinkite <a class="link" href="tel:+3706706022">+370 670 6022</a>.</p>
+            <form class="form" id="order-form" novalidate data-bouquet="breathe">
+              <div class="field">
+                <label for="f-name">Vardas</label>
+                <input id="f-name" name="name" autocomplete="name" required maxlength="120" />
+                <p class="field__err" id="f-name-err"></p>
+              </div>
+              <div class="field">
+                <label for="f-phone">Telefonas</label>
+                <input id="f-phone" name="phone" type="tel" autocomplete="tel" inputmode="tel" required maxlength="40" />
+                <p class="field__err" id="f-phone-err"></p>
+              </div>
+              <div class="field">
+                <label for="f-email">El. paštas <span class="opt">(nebūtina)</span></label>
+                <input id="f-email" name="email" type="email" autocomplete="email" maxlength="200" />
+                <p class="field__err" id="f-email-err"></p>
+              </div>
+              <div class="field">
+                <label for="f-when">Kada reikės? <span class="opt">(nebūtina)</span></label>
+                <input id="f-when" name="needed_by" maxlength="80" placeholder="Šeštadienį, 12 val." />
+                <p class="field__err" id="f-when-err"></p>
+              </div>
+              <fieldset class="field field--wide choice">
+                <legend>Kaip gausite puokštę?</legend>
+                <label><input type="radio" name="delivery" value="no" checked /> Atsiimsiu parduotuvėje</label>
+                <label><input type="radio" name="delivery" value="yes" /> Atvežkite</label>
+              </fieldset>
+              <div class="field field--wide" id="address-field" hidden>
+                <label for="f-address">Pristatymo adresas</label>
+                <input id="f-address" name="address" autocomplete="street-address" maxlength="300" />
+                <p class="field__err" id="f-address-err"></p>
+              </div>
+              <div class="field field--wide">
+                <label for="f-message">Kokios puokštės norite?</label>
+                <textarea id="f-message" name="message" rows="4" required maxlength="2000" placeholder="Proga, spalvos, biudžetas"></textarea>
+                <p class="field__err" id="f-message-err"></p>
+              </div>
+              <!-- spam trap -->
+              <div class="hp" aria-hidden="true"><label>Svetainė <input name="website" tabindex="-1" autocomplete="off" /></label></div>
+              <div class="field--wide form__send">
+                <button class="btn" type="submit" data-bouquet="loosen">Siųsti užsakymą</button>
+                <p class="form__status" role="status" aria-live="polite"></p>
+              </div>
+            </form>
+          </div>
+          <div class="stage-slot order__slot" aria-hidden="true"></div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="foot">
+      <div class="wrap foot__grid">
+        <img class="foot__logo" src="/brand/lockup-white.png" alt="Jonučių gėlės" width="220" height="111" />
+        <div>
+          <p><a class="link" href="https://www.google.com/maps/search/?api=1&amp;query=Artoj%C5%B3%20g.%2012%2C%20Telei%C4%8Diai%2C%20Kauno%20r." target="_blank" rel="noopener">Artojų g. 12, Teleičiai, Kauno r.</a></p>
+          <p><a class="link" href="tel:+3706706022">+370 670 6022</a></p>
+        </div>
+        <div>
+          <p>I–V 7:30–20:00</p>
+          <p>VI 8:00–20:00, VII 9:00–18:00</p>
+        </div>
+        <p class="foot__legal">© 2026 Jonučių gėlės</p>
+      </div>
+    </footer>
+
+    <nav class="bar" aria-label="Greiti veiksmai">
+      <a class="btn btn--quiet" href="tel:+3706706022">Skambinti</a>
+      <a class="btn" href="#uzsakymas">Užsakyti puokštę</a>
+    </nav>
+
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>
