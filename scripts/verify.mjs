@@ -51,7 +51,7 @@ async function run(browser, sc) {
   };
 
   await page.goto(`${BASE}/?quality=${sc.quality}&seed=4242`);
-  await page.waitForFunction(() => window.__flowers?.stage.environment !== 'none', null, { timeout: 120000 });
+  await page.waitForFunction(() => window.__flowers && window.__flowers.stage.environment !== 'none', null, { timeout: 120000 });
   await settle(3, 4);
   await page.waitForTimeout(600); // canvas fade-in
   const hero = await page.evaluate(() => ({

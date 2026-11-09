@@ -113,6 +113,10 @@ function patch(mat: MeshPhysicalMaterial, o: PatchOpts): void {
         'mix( 1.0, getShadow( directionalShadowMap[ i ]$1), 0.7 ) : 1.0;',
       ),
     );
+    // Out-of-range values (negative or huge, e.g. sheen at grazing angles) survive in the half-float composer
+    // target and tone-map to black specks on real GPUs; the 8-bit path clamps them silently.
+    f = f.replace('#include <opaque_fragment>', `#include <opaque_fragment>
+      gl_FragColor.rgb = clamp(gl_FragColor.rgb, 0.0, 32.0);`);
     shader.fragmentShader = f;
   };
   mat.customProgramCacheKey = () => `flowerpatch-${usePal ? 'pal' : 'plain'}`;
