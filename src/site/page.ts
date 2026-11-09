@@ -6,7 +6,7 @@ interface Hooks {
   flourish(): void;
 }
 
-const PHONE = '+370 670 6022';
+const PHONE = '+370 667 06022';
 
 export function initSite(h: Hooks): void {
   // Buttons and links nudge the bouquet.

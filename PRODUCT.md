@@ -20,9 +20,10 @@ Visitors are mostly on phones. Orders are confirmed by the shop personally (phon
 
 ## Capabilities and Constraints
 - Language: Lithuanian only (`lang="lt"`).
+- Lithuanian roses and tulips in season.
 - Offer (confirmed): bouquets every day in the shop (walk-in), bouquets to order, delivery, special orders for events. The shop does NOT decorate on site at events.
 - Hours (confirmed): Mon to Fri 7:30 to 20:00, Sat 8:00 to 20:00, Sun 9:00 to 18:00.
-- Address: Artojų g. 12, Teleičiai, Kauno r. Phone as given: +3706706022 (looks one digit short for a Lithuanian number; to confirm).
+- Address: Artojų g. 12, Teleičiai, Kauno r. Phone: 066706022 (+370 667 06022).
 - Contact form stores enquiries in Supabase when configured (`VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`); not live yet.
 - Future domain: jonuciugeles.lt (if the project goes ahead).
 - Undecided: delivery area and price, contact email, prices.
