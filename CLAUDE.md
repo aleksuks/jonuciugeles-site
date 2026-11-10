@@ -4,7 +4,7 @@ Store website for Jonučių gėlės (Artojų g. 12, Teleičiai, Kauno r.), in Li
 
 ## Status
 
-Built: hero, visit (address, hours, open-now), offer, photo slots (empty until the client sends photos, see comments in index.html), order form (Supabase-ready: `supabase/schema.sql`, `.env.example`; without env it says it is not connected), footer, phone action bar. `npm run verify` checks desktop and phone on software rendering; real phone frame rates untested. Live Google reviews need `VITE_GOOGLE_MAPS_KEY` (not set yet; the static 4,6 rating link works without it). Env vars reach the Pages build as GitHub repository Variables. Four colour themes (`data-theme` on html; the 3D backdrop is tuned to each `--ground`). Photos in `public/photos/` (`NN.webp` 800px, `NN-l.webp` 1800px, EXIF stripped). Future domain jonuciugeles.lt (canonical tags set; Pages build uses a sub-path).
+Built: hero, visit (address, hours, open-now), offer, photo wall, order form (emails the shop via Web3Forms with `VITE_WEB3FORMS_KEY`; optional Supabase copy: `supabase/schema.sql`; with neither it says it is not connected), footer, phone action bar. `npm run verify` checks desktop and phone on software rendering; real phone frame rates untested. Live Google reviews need `VITE_GOOGLE_MAPS_KEY` (not set yet; the static 4,6 rating link works without it). Env vars reach the Pages build as GitHub repository Variables. One palette (sage + wine, chosen by the client; the 3D backdrop is tuned to `--ground`). Photos in `public/photos/` (`NN.webp` 800px, `NN-l.webp` 1800px, EXIF stripped). Domain jonuciugeles.lt (owned; canonical tags set; the build uses relative paths so it works on github.io and the domain).
 
 ## Stack
 

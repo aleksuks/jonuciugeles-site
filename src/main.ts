@@ -52,7 +52,6 @@ initSite({
   loosen: (on) => { loosenTarget = on; },
   spin: () => { spinTarget += 1.1; },
   flourish: () => { flourishUntil = performance.now() + 1100; },
-  recolour: () => { tuneBackdrop(); spinTarget += 0.8; },
 });
 
 // ---- framing: follow the stage-slot in view ----
@@ -76,7 +75,7 @@ let envReady = false;
 void stage.ready.then(() => { envReady = true; tuneBackdrop(); });
 stage.onQualityChange(() => tuneBackdrop());
 
-// ---- the 3D backdrop is tuned until it renders exactly as the theme's --ground (tone mapping included) ----
+// ---- the 3D backdrop is tuned until it renders exactly as the page's --ground (tone mapping included) ----
 const tuned = new Map<string, Color>();
 function tuneBackdrop(): void {
   if (!envReady) return;

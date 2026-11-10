@@ -5,10 +5,8 @@ interface Hooks {
   loosen(amount: number): void;
   spin(): void;
   flourish(): void;
-  recolour(): void;
 }
 
-const THEMES: Record<string, string> = { alyvuoge: 'Alyvuogė', roze: 'Rožė', salavijas: 'Šalavijas', naktis: 'Naktis' };
 
 const PHONE = '+370 667 06022';
 
@@ -30,37 +28,11 @@ export function initSite(h: Hooks): void {
   addEventListener('scroll', onScroll, { passive: true });
   onScroll();
 
-  themes(h);
   gallery();
   openNow();
   void loadReviews();
   actionBar();
   orderForm(h, (b) => { breathing = b; h.loosen(b); });
-}
-
-/** Colour themes: the nav button cycles them; the choice is remembered on this device. */
-function themes(h: Hooks): void {
-  const html = document.documentElement;
-  const btn = document.querySelector<HTMLButtonElement>('[data-theme-next]');
-  const names = Object.keys(THEMES);
-  let saved: string | null = null;
-  try { saved = localStorage.getItem('theme'); } catch { /* storage blocked */ }
-  const set = (t: string): void => {
-    html.dataset.theme = t;
-    btn?.setAttribute('aria-label', `Spalvos: ${THEMES[t]}. Keisti`);
-  };
-  set(saved && saved in THEMES ? saved : names[0]);
-  btn?.addEventListener('click', () => {
-    const next = names[(names.indexOf(html.dataset.theme ?? '') + 1) % names.length];
-    const apply = (): void => {
-      set(next);
-      h.recolour();
-    };
-    const d = document as Document & { startViewTransition?: (cb: () => void) => unknown };
-    if (d.startViewTransition && !matchMedia('(prefers-reduced-motion: reduce)').matches) d.startViewTransition(apply);
-    else apply();
-    try { localStorage.setItem('theme', next); } catch { /* storage blocked */ }
-  });
 }
 
 /** Photo wall: first 12 shown, the rest on request; a photo opens large in a dialog. */

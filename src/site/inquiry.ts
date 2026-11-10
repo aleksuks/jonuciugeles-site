@@ -1,4 +1,5 @@
-// Order form -> Supabase table `inquiries` (supabase/schema.sql) over REST.
+// Order form -> the shop's email via Web3Forms (VITE_WEB3FORMS_KEY), and/or Supabase table `inquiries`
+// (supabase/schema.sql). Either one is enough; with both, email is what must succeed.
 
 export interface Inquiry {
   name: string;
@@ -15,7 +16,8 @@ export type Errors = Partial<Record<keyof Inquiry, string>>;
 const env = import.meta.env as Record<string, string | undefined>;
 const URL_ = env.VITE_SUPABASE_URL?.replace(/\/$/, '');
 const KEY = env.VITE_SUPABASE_ANON_KEY;
-export const connected = Boolean(URL_ && KEY);
+const MAIL_KEY = env.VITE_WEB3FORMS_KEY;
+export const connected = Boolean(MAIL_KEY || (URL_ && KEY));
 
 export function readForm(form: HTMLFormElement): Inquiry {
   const d = new FormData(form);
@@ -47,11 +49,35 @@ export function validate(q: Inquiry): Errors {
 }
 
 export async function send(q: Inquiry): Promise<void> {
-  if (!URL_ || !KEY) throw new Error('not-connected');
-  const res = await fetch(`${URL_}/rest/v1/inquiries`, {
+  const row = { ...q, address: q.delivery ? q.address : '' };
+  const store = URL_ && KEY
+    ? fetch(`${URL_}/rest/v1/inquiries`, {
+        method: 'POST',
+        headers: { apikey: KEY, Authorization: `Bearer ${KEY}`, 'Content-Type': 'application/json', Prefer: 'return=minimal' },
+        body: JSON.stringify(row),
+      }).then((r) => { if (!r.ok) throw new Error(`supabase ${r.status}`); })
+    : null;
+  if (!MAIL_KEY) {
+    if (!store) throw new Error('not-connected');
+    return store;
+  }
+  store?.catch((e) => console.warn('[inquiry] not stored', e)); // email is the one that counts
+  const res = await fetch('https://api.web3forms.com/submit', {
     method: 'POST',
-    headers: { apikey: KEY, Authorization: `Bearer ${KEY}`, 'Content-Type': 'application/json', Prefer: 'return=minimal' },
-    body: JSON.stringify({ ...q, address: q.delivery ? q.address : '' }),
+    headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+    body: JSON.stringify({
+      access_key: MAIL_KEY,
+      subject: `Užsakymas iš svetainės: ${q.name}`,
+      from_name: 'jonuciugeles.lt',
+      ...(q.email ? { replyto: q.email } : {}),
+      Vardas: q.name,
+      Telefonas: q.phone,
+      'El. paštas': q.email || '-',
+      'Kada reikės': q.needed_by || '-',
+      Gavimas: q.delivery ? `Pristatyti: ${q.address}` : 'Atsiims parduotuvėje',
+      Žinutė: q.message,
+    }),
   });
-  if (!res.ok) throw new Error(`supabase ${res.status}`);
+  const out = (await res.json().catch(() => ({}))) as { success?: boolean };
+  if (!res.ok || !out.success) throw new Error(`web3forms ${res.status}`);
 }

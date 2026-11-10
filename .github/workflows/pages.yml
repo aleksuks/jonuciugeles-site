@@ -27,7 +27,8 @@ jobs:
       - run: npx vitest run
       - run: npm run build
         env:
-          PAGES_BASE: /${{ github.event.repository.name }}/
+          PAGES_BASE: ./  # relative: works on aleksuks.github.io/jonuciugeles-site/ and on jonuciugeles.lt
+          VITE_WEB3FORMS_KEY: ${{ vars.VITE_WEB3FORMS_KEY }}
           VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ vars.VITE_SUPABASE_ANON_KEY }}
           VITE_GOOGLE_MAPS_KEY: ${{ vars.VITE_GOOGLE_MAPS_KEY }}

@@ -2,43 +2,25 @@
 @font-face { font-family: 'Instrument Sans'; src: url('./fonts/InstrumentSans.ttf') format('truetype'); font-weight: 400 700; font-stretch: 75% 100%; font-display: swap; }
 
 :root {
-  --ground: #e5ded4;
-  --surface: #dcd6bf;
-  --accent: #6d6a49;
-  --accent-deep: #55523a;
-  --on-accent: #fffaf0;
-  --ink: #33311d;
-  --ink-soft: #57533a;
-  --band: #6d6a49;
-  --on-band: #fbf6ea;
+  --ground: #e0e6de;
+  --surface: #cbd6c8;
+  --accent: #7b2639;
+  --accent-deep: #611d2c;
+  --on-accent: #fbf3f4;
+  --ink: #24302a;
+  --ink-soft: #4a5a50;
+  --band: #7b2639;
+  --on-band: #f8eef0;
   --field: rgba(255, 252, 245, 0.55);
   --field-hi: rgba(255, 252, 245, 0.9);
-  --rule: rgba(51, 49, 29, 0.2);
+  --rule: rgba(36, 48, 42, 0.2);
   --err: #9a2b2b;
-  --mark-filter: none;
   --serif: 'Fraunces', 'Iowan Old Style', Georgia, serif;
   --sans: 'Instrument Sans', 'Segoe UI', system-ui, sans-serif;
   --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
   --nav: 68px;
   --gut: clamp(20px, 4vw, 48px);
   --sec-pad: clamp(72px, 10vw, 140px);
-}
-/* Each theme: a ground and surface that sit together, and one contrasting accent. */
-[data-theme='roze'] {
-  --ground: #f0e2df; --surface: #e5cdc8; --accent: #2f5546; --accent-deep: #233f34; --on-accent: #fdf6f2; --ink: #3a2629; --ink-soft: #6a4a4e;
-  --band: #2f5546; --on-band: #f6ece8; --rule: rgba(58, 38, 41, 0.2);
-}
-[data-theme='salavijas'] {
-  --ground: #e0e6de; --surface: #cbd6c8; --accent: #7b2639; --accent-deep: #611d2c;
-  --on-accent: #fbf3f4; --ink: #24302a; --ink-soft: #4a5a50;
-  --band: #7b2639; --on-band: #f8eef0; --rule: rgba(36, 48, 42, 0.2);
-}
-[data-theme='naktis'] {
-  --ground: #1d2320; --surface: #283029; --accent: #e8b48c; --accent-deep: #f2c6a3;
-  --on-accent: #2a1d14; --ink: #eee6d8; --ink-soft: #b9b2a3;
-  --band: #283029; --on-band: #eee6d8; --field: rgba(255, 255, 255, 0.06); --field-hi: rgba(255, 255, 255, 0.11);
-  --rule: rgba(238, 230, 216, 0.18); --err: #ff9b8a; --mark-filter: brightness(0) invert(0.9);
-  color-scheme: dark;
 }
 
 *, *::before, *::after { box-sizing: border-box; }
@@ -100,7 +82,6 @@ a { color: inherit; }
 .nav__in { height: 100%; display: flex; align-items: center; gap: 32px; }
 .nav__brand { display: flex; align-items: center; gap: 10px; text-decoration: none; font: 500 17px/1 var(--sans); letter-spacing: 0.01em; min-height: 44px; }
 .nav__links { display: flex; gap: 28px; margin-left: auto; }
-.nav__in > .theme-btn { margin-left: -8px; }
 .nav__links a { text-decoration: none; font-size: 15px; padding: 12px 0; background: linear-gradient(currentColor, currentColor) 0 calc(100% - 8px) / 0 1px no-repeat; transition: background-size 260ms var(--ease-out); }
 .nav__links a:hover { background-size: 100% 1px; }
 
@@ -214,17 +195,6 @@ a { color: inherit; }
 .lightbox[open] img { animation: pop 260ms var(--ease-out); }
 @keyframes pop { from { opacity: 0; transform: scale(0.96); } }
 
-/* ---------- theme switch ---------- */
-.theme-btn { position: relative; width: 58px; height: 44px; border: 0; border-radius: 50%; background: none; cursor: pointer; padding: 0; transition: transform 160ms var(--ease-out); }
-.theme-btn:active { transform: scale(0.94); }
-.theme-btn i { position: absolute; width: 14px; height: 14px; border-radius: 50%; box-shadow: inset 0 0 0 1px var(--rule); }
-.theme-btn i:nth-child(1) { left: 5px; top: 15px; background: var(--ground); }
-.theme-btn i:nth-child(2) { left: 22px; top: 15px; background: var(--surface); }
-.theme-btn i:nth-child(3) { left: 39px; top: 15px; background: var(--accent); }
-@media (hover: hover) and (pointer: fine) { .theme-btn:hover i:nth-child(1) { transform: translateX(-2px); } .theme-btn:hover i:nth-child(3) { transform: translateX(2px); } .theme-btn i { transition: transform 200ms var(--ease-out); } }
-.nav__brand img, .partner img { filter: var(--mark-filter); }
-::view-transition-old(root), ::view-transition-new(root) { animation-duration: 380ms; animation-timing-function: ease; }
-
 /* ---------- footer ---------- */
 .foot { background: var(--band); color: var(--on-band); padding: 64px 0 calc(40px + env(safe-area-inset-bottom)); }
 .foot__grid { display: grid; grid-template-columns: auto 1fr 1fr; gap: 24px 64px; align-items: start; }
@@ -250,8 +220,7 @@ a { color: inherit; }
 /* ---------- narrow ---------- */
 @media (max-width: 899px) {
   .nav__links { display: none; }
-  .nav__in { gap: 8px; }
-  .nav__in > .theme-btn { margin-left: auto; }
+  .nav__in { justify-content: space-between; }
   .wall { columns: 2; column-gap: 8px; }
   .wall a { margin-bottom: 8px; }
   .hero__grid, .offer__grid, .order__grid, .grid { grid-template-columns: minmax(0, 1fr); }

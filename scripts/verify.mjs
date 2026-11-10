@@ -78,17 +78,6 @@ async function run(browser, sc) {
   check('canvas backdrop matches page ground', g0.d <= 3, `${g0.got} vs ${g0.want}`);
   const shots = [await shot('hero')];
   if (!sc.heroOnly) {
-    for (let i = 0; i < 4; i++) {
-      await page.click('[data-theme-next]');
-      await page.waitForTimeout(500);
-      await settle(0.2, 2);
-      const g = await groundMatch();
-      const theme = await page.evaluate(() => document.documentElement.dataset.theme);
-      check(`theme ${theme}: canvas matches ground`, g.d <= 3, `${g.got} vs ${g.want}`);
-      if (i < 3) shots.push(await shot(`theme-${theme}`));
-    }
-  }
-  if (!sc.heroOnly) {
     await scrollTo('#mes-esame');
     shots.push(await shot('visit'));
     await scrollTo('#paslaugos');
