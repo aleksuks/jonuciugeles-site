@@ -108,6 +108,27 @@ a { color: inherit; }
 .visit__cols { display: grid; grid-template-columns: 1fr 1.3fr; gap: 24px; }
 .visit__addr { font-size: 20px; line-height: 1.5; margin-bottom: 14px; }
 .visit__cols .btn { margin-top: 10px; }
+/* Shop footage in "Mes esame": html[data-video] picks the variant (switcher in page.ts). */
+.vid { display: none; width: 100%; height: 100%; object-fit: cover; background: var(--surface); }
+.visit__clip { display: none; }
+/* vitrina: the counter clip plays inside the shopfront's window panes, masked around the florist and bouquet. */
+[data-video="vitrina"] .vid--window {
+  display: block; position: absolute; left: 0; top: 35.6%; width: 82.5%; height: 57.5%;
+  opacity: 0.8; pointer-events: none;
+  -webkit-mask: url('/video/window-mask.svg') 0 0 / 100% 100%; mask: url('/video/window-mask.svg') 0 0 / 100% 100%;
+}
+[data-video="vitrina"] .visit__photo img:hover { transform: none; }
+/* salia: shopfront photo and the vertical clip side by side. */
+[data-video="salia"] .visit__photo, [data-video="salia"] .visit__clip { display: block; grid-column: span 3; aspect-ratio: auto; }
+[data-video="salia"] .visit__clip .vid { display: block; }
+/* fonas: the counter clip behind the address panel, tinted so the text stays readable. */
+.visit__panel { position: relative; isolation: isolate; overflow: hidden; }
+[data-video="fonas"] .vid--panel { display: block; position: absolute; inset: 0; z-index: -2; }
+[data-video="fonas"] .visit__panel::before { content: ''; position: absolute; inset: 0; z-index: -1; background: color-mix(in srgb, var(--surface) 80%, transparent); }
+.vid-pick { position: fixed; top: calc(var(--nav) + 8px); right: 8px; z-index: 7; display: flex; gap: 2px; padding: 3px; border-radius: 999px; background: var(--ink); font: 500 13px/1 var(--sans); box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18); }
+.vid-pick button { font: inherit; color: var(--ground); background: none; border: 0; padding: 8px 11px; border-radius: 999px; cursor: pointer; }
+.vid-pick button[aria-pressed="true"] { background: var(--ground); color: var(--ink); }
+
 .open-now { font-weight: 500; min-height: 1.6em; }
 .open-now::before { content: ''; display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: currentColor; margin-right: 10px; vertical-align: 2px; }
 .open-now:empty::before { display: none; }
@@ -234,6 +255,9 @@ a { color: inherit; }
   .hero__text { grid-column: 1; grid-row: 2; padding-bottom: 40px; gap: 20px; }
   .visit__panel, .visit__photo, .offer__text, .order__text, .span-3, .span-4, .span-5 { grid-column: 1; }
   .visit__cols { grid-template-columns: minmax(0, 1fr); }
+  [data-video="salia"] .visit__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+  [data-video="salia"] .visit__panel { grid-column: 1 / -1; margin-bottom: 16px; }
+  [data-video="salia"] .visit__photo, [data-video="salia"] .visit__clip { grid-column: auto; aspect-ratio: 4/5; }
   .offer { display: block; min-height: 0; }
   .offer__slot { grid-row: 1; min-height: 62svh; margin-bottom: 8px; }
   .reviews__list { grid-template-columns: minmax(0, 1fr); }

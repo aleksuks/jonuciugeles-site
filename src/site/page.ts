@@ -29,10 +29,52 @@ export function initSite(h: Hooks): void {
   onScroll();
 
   gallery();
+  shopVideo();
   openNow();
   void loadReviews();
   actionBar();
   orderForm(h, (b) => { breathing = b; h.loosen(b); });
+}
+
+const VIDEO_OPTIONS = { vitrina: 'Vitrina', salia: 'Šalia', fonas: 'Fonas', be: 'Be' } as const;
+type VideoOption = keyof typeof VIDEO_OPTIONS;
+
+/** Shop footage in "Mes esame". Videos load and play only while on screen; reduced motion keeps the poster. */
+function shopVideo(): void {
+  const isOption = (v: string | null): v is VideoOption => !!v && v in VIDEO_OPTIONS;
+  const fromUrl = new URLSearchParams(location.search).get('video');
+  let saved: string | null = null;
+  try { saved = localStorage.getItem('video'); } catch { /* storage blocked */ }
+  const set = (v: VideoOption): void => {
+    document.documentElement.dataset.video = v;
+    try { localStorage.setItem('video', v); } catch { /* storage blocked */ }
+    for (const b of pick.querySelectorAll('button')) b.setAttribute('aria-pressed', String(b.value === v));
+  };
+
+  // ponytail: review-only switcher; once the client picks, delete it and hardcode data-video on <html>.
+  const pick = document.createElement('div');
+  pick.className = 'vid-pick';
+  pick.setAttribute('role', 'group');
+  pick.setAttribute('aria-label', 'Vaizdo įrašo variantas');
+  for (const [v, label] of Object.entries(VIDEO_OPTIONS)) {
+    const b = document.createElement('button');
+    b.type = 'button'; b.value = v; b.textContent = label;
+    b.addEventListener('click', () => set(v as VideoOption));
+    pick.append(b);
+  }
+  document.body.append(pick);
+  set(isOption(fromUrl) ? fromUrl : isOption(saved) ? saved : 'vitrina');
+
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  // A hidden variant's video has no box, so it never intersects and never downloads.
+  const io = new IntersectionObserver((entries) => {
+    for (const e of entries) {
+      const v = e.target as HTMLVideoElement;
+      if (e.isIntersecting) void v.play().catch(() => { /* autoplay refused: poster stays */ });
+      else v.pause();
+    }
+  });
+  for (const v of document.querySelectorAll<HTMLVideoElement>('[data-vid]')) io.observe(v);
 }
 
 /** Photo wall: first 12 shown, the rest on request; a photo opens large in a dialog. */
