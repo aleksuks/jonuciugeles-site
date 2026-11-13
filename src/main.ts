@@ -69,6 +69,8 @@ function activeSlot(): { el: HTMLElement; r: DOMRect } | null {
 }
 
 let rect: Rect | null = null;
+/** Leftover offset from the previous slot; scrolling moves the bouquet 1:1, only slot changes glide. */
+let off: Rect = { x: 0, y: 0, w: 0, h: 0 };
 let hiddenAt = 0;
 let lastSlot: HTMLElement | null = null;
 let envReady = false;
@@ -117,13 +119,13 @@ function frame(now: number): void {
   }
 
   if (slot) {
-    lastSlot = slot.el;
     const t: Rect = { x: slot.r.left, y: slot.r.top, w: slot.r.width, h: slot.r.height };
-    if (!rect || hiddenAt) rect = t;
-    else {
-      const k = 1 - Math.exp(-16 * dt);
-      rect = { x: rect.x + (t.x - rect.x) * k, y: rect.y + (t.y - rect.y) * k, w: rect.w + (t.w - rect.w) * k, h: rect.h + (t.h - rect.h) * k };
-    }
+    if (!rect || hiddenAt) off = { x: 0, y: 0, w: 0, h: 0 };
+    else if (slot.el !== lastSlot) off = { x: rect.x - t.x, y: rect.y - t.y, w: rect.w - t.w, h: rect.h - t.h };
+    lastSlot = slot.el;
+    const k = Math.exp(-8 * dt);
+    off = { x: off.x * k, y: off.y * k, w: off.w * k, h: off.h * k };
+    rect = { x: t.x + off.x, y: t.y + off.y, w: t.w + off.w, h: t.h + off.h };
     rig.setFreeRect(rect, W, H);
     hiddenAt = 0;
     const state = slot.el.closest<HTMLElement>('[data-stage]')?.dataset.stage;

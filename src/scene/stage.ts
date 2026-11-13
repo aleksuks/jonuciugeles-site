@@ -32,7 +32,8 @@ import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment
 import type { QualityTier } from '../types';
 import { SLOW_FRAME_MS, initialTier } from './tier';
 
-export const HDRI_FILE = 'hdri/studio_small_09_1k.hdr';
+// 512x256 (downsampled from the 1k original): petals are rough, so the smaller file lights the same and loads 3x faster.
+export const HDRI_FILE = 'hdri/studio_small_09_512.hdr';
 
 const TIERS: readonly QualityTier[] = ['high', 'medium', 'low'];
 
@@ -222,6 +223,8 @@ export function createStage(canvas: HTMLCanvasElement): Stage {
       environment = 'room';
     }
     pmrem.dispose();
+    // Compile shaders off the main thread where supported, so the first frame does not freeze the page.
+    await renderer.compileAsync(scene, camera);
   })();
 
   // Post chain
@@ -276,9 +279,11 @@ export function createStage(canvas: HTMLCanvasElement): Stage {
     aoPass.setSize(Math.max(1, Math.floor(cssW * pr * s)), Math.max(1, Math.floor(cssH * pr * s)));
   }
 
-  function applySize(): void {
+  /** Resizing clears the canvas, so a resize event with an unchanged size (phone address bar) must not touch it. */
+  function applySize(force = true): void {
     const w = Math.max(1, canvas.clientWidth);
     const h = Math.max(1, canvas.clientHeight);
+    if (!force && w === cssW && h === cssH) return;
     cssW = w;
     cssH = h;
     renderer.setSize(w, h, false);
@@ -412,9 +417,9 @@ export function createStage(canvas: HTMLCanvasElement): Stage {
     },
   };
 
-  const ro = new ResizeObserver(() => applySize());
+  const ro = new ResizeObserver(() => applySize(false));
   ro.observe(canvas);
-  window.addEventListener('resize', applySize);
+  window.addEventListener('resize', () => applySize(false));
 
   applyQuality(quality);
 
