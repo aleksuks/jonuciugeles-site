@@ -98,7 +98,7 @@ a { color: inherit; }
 .actions { display: flex; align-items: center; gap: 28px; flex-wrap: wrap; }
 .actions .link { font-weight: 500; }
 
-.visit h2 { margin-bottom: 12px; }
+.visit__head { display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: 4px 32px; margin-bottom: 12px; }
 .type-moment { font: 360 clamp(40px, 6.6vw, 92px)/1.02 var(--serif); font-variation-settings: 'SOFT' 60, 'WONK' 1; letter-spacing: -0.03em; margin-bottom: clamp(40px, 5vw, 64px); }
 .type-moment a { text-decoration: none; background: linear-gradient(currentColor, currentColor) 0 96% / 0 2px no-repeat; transition: background-size 400ms var(--ease-out); }
 .type-moment a:hover { background-size: 100% 2px; }
@@ -108,26 +108,41 @@ a { color: inherit; }
 .visit__cols { display: grid; grid-template-columns: 1fr 1.3fr; gap: 24px; }
 .visit__addr { font-size: 20px; line-height: 1.5; margin-bottom: 14px; }
 .visit__cols .btn { margin-top: 10px; }
-/* Shop footage in "Mes esame": html[data-video] picks the variant (switcher in page.ts). */
-.vid { display: none; width: 100%; height: 100%; object-fit: cover; background: var(--surface); }
-.visit__clip { display: none; }
-/* vitrina: the counter clip plays inside the shopfront's window panes, masked around the florist and bouquet. */
-[data-video="vitrina"] .vid--window {
-  display: block; position: absolute; left: 0; top: 35.6%; width: 82.5%; height: 57.5%;
-  opacity: 0.8; pointer-events: none;
-  -webkit-mask: url('/video/window-mask.svg') 0 0 / 100% 100%; mask: url('/video/window-mask.svg') 0 0 / 100% 100%;
+
+/* ---------- film: the shop's own footage in "Mes esame"; html[data-video] places it (salia | apacioje | be) ---------- */
+.film { display: none; }
+.film video { display: block; width: 100%; height: 100%; object-fit: cover; }
+.film__toggle {
+  position: absolute; left: 12px; bottom: 12px; width: 44px; height: 44px; padding: 0; border: 0; border-radius: 50%;
+  display: grid; place-items: center; background: var(--ground); color: var(--ink); cursor: pointer;
+  transition: transform 160ms var(--ease-out), background-color 200ms ease;
 }
-[data-video="vitrina"] .visit__photo img:hover { transform: none; }
-/* salia: shopfront photo and the vertical clip side by side. */
-[data-video="salia"] .visit__photo, [data-video="salia"] .visit__clip { display: block; grid-column: span 3; aspect-ratio: auto; }
-[data-video="salia"] .visit__clip .vid { display: block; }
-/* fonas: the counter clip behind the address panel, tinted so the text stays readable. */
-.visit__panel { position: relative; isolation: isolate; overflow: hidden; }
-[data-video="fonas"] .vid--panel { display: block; position: absolute; inset: 0; z-index: -2; }
-[data-video="fonas"] .visit__panel::before { content: ''; position: absolute; inset: 0; z-index: -1; background: color-mix(in srgb, var(--surface) 80%, transparent); }
-.vid-pick { position: fixed; top: calc(var(--nav) + 8px); right: 8px; z-index: 7; display: flex; gap: 2px; padding: 3px; border-radius: 999px; background: var(--ink); font: 500 13px/1 var(--sans); box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18); }
-.vid-pick button { font: inherit; color: var(--ground); background: none; border: 0; padding: 8px 11px; border-radius: 999px; cursor: pointer; }
-.vid-pick button[aria-pressed="true"] { background: var(--ground); color: var(--ink); }
+.film__toggle:active { transform: scale(0.94); }
+.film__toggle svg { grid-area: 1 / 1; width: 16px; height: 16px; fill: currentColor; transition: opacity 180ms ease, transform 180ms var(--ease-out), filter 180ms ease; }
+.film:not(.is-playing) .film__pause, .film.is-playing .film__play { opacity: 0; transform: scale(0.8); filter: blur(2px); }
+@media (hover: hover) and (pointer: fine) { .film__toggle:hover { background: var(--field-hi); } }
+/* apacioje: the counter film across the section under the address and photo, cropped to a wide band. */
+[data-video="apacioje"] .film--wide { display: block; grid-column: 1 / -1; aspect-ratio: 2.35; }
+[data-video="apacioje"] .film--wide video { object-position: 50% 12%; }
+@media (min-width: 900px) {
+  /* salia: address, shopfront and the portrait film in one row, photo and film at one height in their own ratios. */
+  [data-video="salia"] .visit__grid { --film-h: clamp(480px, 40vw, 540px); grid-template-columns: minmax(0, 1fr) auto; }
+  /* Tablet: the address panel across the top, then the shopfront (cropped wide) beside the film. */
+  [data-video="salia"] .visit__panel { grid-column: 1 / -1; }
+  [data-video="salia"] .visit__photo { grid-column: auto; height: var(--film-h); aspect-ratio: auto; }
+  [data-video="salia"] .visit__photo img { object-position: 50% 20%; }
+  [data-video="salia"] .film--portrait { display: block; grid-column: auto; height: var(--film-h); width: calc(var(--film-h) * 9 / 16); aspect-ratio: auto; }
+}
+@media (min-width: 1180px) {
+  [data-video="salia"] .visit__grid { grid-template-columns: minmax(0, 1fr) auto auto; }
+  [data-video="salia"] .visit__panel { grid-column: auto; padding: clamp(28px, 3vw, 40px); gap: 20px; }
+  [data-video="salia"] .visit__photo { width: calc(var(--film-h) * 4 / 5); }
+  [data-video="salia"] .visit__photo img { object-position: 50% 50%; }
+  [data-video="salia"] .visit__cols { grid-template-columns: minmax(0, 1fr); }
+}
+.film-pick { display: flex; align-items: baseline; gap: 0 20px; font-size: 15px; color: var(--ink-soft); }
+.film-pick button { font: inherit; color: inherit; background: none; border: 0; padding: 0; min-height: 44px; cursor: pointer; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 5px; }
+.film-pick button[aria-pressed="true"] { color: var(--ink); font-weight: 600; text-decoration: none; }
 
 .open-now { font-weight: 500; min-height: 1.6em; }
 .open-now::before { content: ''; display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: currentColor; margin-right: 10px; vertical-align: 2px; }
@@ -255,9 +270,12 @@ a { color: inherit; }
   .hero__text { grid-column: 1; grid-row: 2; padding-bottom: 40px; gap: 20px; }
   .visit__panel, .visit__photo, .offer__text, .order__text, .span-3, .span-4, .span-5 { grid-column: 1; }
   .visit__cols { grid-template-columns: minmax(0, 1fr); }
-  [data-video="salia"] .visit__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
-  [data-video="salia"] .visit__panel { grid-column: 1 / -1; margin-bottom: 16px; }
-  [data-video="salia"] .visit__photo, [data-video="salia"] .visit__clip { grid-column: auto; aspect-ratio: 4/5; }
+  .film { grid-column: 1; }
+  /* salia on a phone: the shopfront as a square crop (sign, windows, florist), then the film upright. */
+  [data-video="salia"] .visit__photo { aspect-ratio: 1; }
+  [data-video="salia"] .visit__photo img { object-position: 50% 30%; }
+  [data-video="salia"] .film--portrait { display: block; aspect-ratio: 4 / 5; }
+  [data-video="apacioje"] .film--wide { grid-column: 1; aspect-ratio: 16 / 9; }
   .offer { display: block; min-height: 0; }
   .offer__slot { grid-row: 1; min-height: 62svh; margin-bottom: 8px; }
   .reviews__list { grid-template-columns: minmax(0, 1fr); }

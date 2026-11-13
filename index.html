@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="lt">
+<html lang="lt" data-video="salia">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
@@ -69,11 +69,19 @@
 
       <section class="sec visit" id="mes-esame" aria-labelledby="visit-h">
         <div class="wrap">
-          <h2 id="visit-h">Mes esame</h2>
+          <div class="visit__head">
+            <h2 id="visit-h">Mes esame</h2>
+            <!-- REVIEW ONLY: film layout picker. Once one is chosen, delete this group and its code in page.ts, and keep data-video on <html>. -->
+            <div class="film-pick" role="group" aria-label="Filmo vieta" data-film-pick>
+              <span>Filmas</span>
+              <button type="button" value="salia">Šalia</button>
+              <button type="button" value="apacioje">Apačioje</button>
+              <button type="button" value="be">Be filmo</button>
+            </div>
+          </div>
           <p class="type-moment"><a href="https://www.google.com/maps/place/Jonu%C4%8Di%C5%B3+g%C4%97l%C4%97s/@54.8387314,23.8808244,237m/data=!3m1!1e3!4m6!3m5!1s0x46e723006fa47983:0x4c372466fd9645df!8m2!3d54.8387418!4d23.8810115!16s%2Fg%2F11y3w_hl55" target="_blank" rel="noopener">Artojų g.&nbsp;12, Teleičiai</a></p>
           <div class="grid visit__grid">
             <div class="visit__panel">
-              <video class="vid vid--panel" data-vid src="/video/shop-square.mp4" poster="/video/shop-square.webp" muted loop playsinline preload="none" aria-hidden="true"></video>
               <p class="open-now" data-open-now></p>
               <div class="visit__cols">
                 <div>
@@ -92,10 +100,21 @@
             </div>
             <figure class="slot visit__photo" style="--r: 4/5">
               <img src="/photos/28.webp" alt="Jonučių gėlės parduotuvė Teleičiuose" width="600" height="800" loading="lazy" />
-              <video class="vid vid--window" data-vid src="/video/shop-square.mp4" poster="/video/shop-square.webp" muted loop playsinline preload="none" aria-hidden="true"></video>
             </figure>
-            <figure class="slot visit__clip" style="--r: 4/5">
-              <video class="vid" data-vid src="/video/shop-vertical.mp4" poster="/video/shop-vertical.webp" muted loop playsinline preload="none" aria-label="Puokštės skynimas parduotuvėje"></video>
+            <!-- The shop's own footage (public/video): portrait film beside the photo, or the counter film across the section. -->
+            <figure class="slot film film--portrait" data-film>
+              <video src="/video/puokste.mp4" poster="/video/puokste.webp" width="576" height="1024" muted loop playsinline disablepictureinpicture disableremoteplayback preload="none" aria-label="Filmas: renkame gėles ir rišame puokštę"></video>
+              <button class="film__toggle" type="button" aria-label="Leisti filmą">
+                <svg class="film__play" viewBox="0 0 16 16" aria-hidden="true"><path d="M4.5 2.4v11.2a.6.6 0 0 0 .92.5l8.6-5.6a.6.6 0 0 0 0-1L5.42 1.9a.6.6 0 0 0-.92.5Z" /></svg>
+                <svg class="film__pause" viewBox="0 0 16 16" aria-hidden="true"><rect x="3.2" y="2" width="3.4" height="12" rx="0.8" /><rect x="9.4" y="2" width="3.4" height="12" rx="0.8" /></svg>
+              </button>
+            </figure>
+            <figure class="slot film film--wide" data-film>
+              <video src="/video/dirbtuve.mp4" poster="/video/dirbtuve.webp" width="1080" height="608" muted loop playsinline disablepictureinpicture disableremoteplayback preload="none" aria-label="Filmas: puokštė rišama ir pakuojama parduotuvėje"></video>
+              <button class="film__toggle" type="button" aria-label="Leisti filmą">
+                <svg class="film__play" viewBox="0 0 16 16" aria-hidden="true"><path d="M4.5 2.4v11.2a.6.6 0 0 0 .92.5l8.6-5.6a.6.6 0 0 0 0-1L5.42 1.9a.6.6 0 0 0-.92.5Z" /></svg>
+                <svg class="film__pause" viewBox="0 0 16 16" aria-hidden="true"><rect x="3.2" y="2" width="3.4" height="12" rx="0.8" /><rect x="9.4" y="2" width="3.4" height="12" rx="0.8" /></svg>
+              </button>
             </figure>
           </div>
         </div>

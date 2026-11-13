@@ -36,45 +36,63 @@ export function initSite(h: Hooks): void {
   orderForm(h, (b) => { breathing = b; h.loosen(b); });
 }
 
-const VIDEO_OPTIONS = { vitrina: 'Vitrina', salia: 'Šalia', fonas: 'Fonas', be: 'Be' } as const;
-type VideoOption = keyof typeof VIDEO_OPTIONS;
-
-/** Shop footage in "Mes esame". Videos load and play only while on screen; reduced motion keeps the poster. */
+/**
+ * The shop's films in "Mes esame". A film downloads and plays only while it is on screen and stops when it leaves;
+ * its button pauses it for good. Reduced motion or data saver: the poster stands until the visitor presses play.
+ */
 function shopVideo(): void {
-  const isOption = (v: string | null): v is VideoOption => !!v && v in VIDEO_OPTIONS;
-  const fromUrl = new URLSearchParams(location.search).get('video');
-  let saved: string | null = null;
-  try { saved = localStorage.getItem('video'); } catch { /* storage blocked */ }
-  const set = (v: VideoOption): void => {
-    document.documentElement.dataset.video = v;
-    try { localStorage.setItem('video', v); } catch { /* storage blocked */ }
-    for (const b of pick.querySelectorAll('button')) b.setAttribute('aria-pressed', String(b.value === v));
-  };
-
-  // ponytail: review-only switcher; once the client picks, delete it and hardcode data-video on <html>.
-  const pick = document.createElement('div');
-  pick.className = 'vid-pick';
-  pick.setAttribute('role', 'group');
-  pick.setAttribute('aria-label', 'Vaizdo įrašo variantas');
-  for (const [v, label] of Object.entries(VIDEO_OPTIONS)) {
-    const b = document.createElement('button');
-    b.type = 'button'; b.value = v; b.textContent = label;
-    b.addEventListener('click', () => set(v as VideoOption));
-    pick.append(b);
-  }
-  document.body.append(pick);
-  set(isOption(fromUrl) ? fromUrl : isOption(saved) ? saved : 'vitrina');
-
-  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-  // A hidden variant's video has no box, so it never intersects and never downloads.
+  filmPick();
+  const quiet = matchMedia('(prefers-reduced-motion: reduce)').matches
+    || (navigator as { connection?: { saveData?: boolean } }).connection?.saveData === true;
   const io = new IntersectionObserver((entries) => {
-    for (const e of entries) {
-      const v = e.target as HTMLVideoElement;
-      if (e.isIntersecting) void v.play().catch(() => { /* autoplay refused: poster stays */ });
-      else v.pause();
-    }
-  });
-  for (const v of document.querySelectorAll<HTMLVideoElement>('[data-vid]')) io.observe(v);
+    for (const e of entries) (e.target as HTMLElement).dispatchEvent(new CustomEvent('film:view', { detail: e.isIntersecting }));
+  }, { threshold: 0.35 });
+
+  for (const film of document.querySelectorAll<HTMLElement>('[data-film]')) {
+    const video = film.querySelector('video');
+    const toggle = film.querySelector('button');
+    if (!video || !toggle) continue;
+    let wanted = !quiet; // does the visitor want it running while on screen
+    let inView = false;
+    const sync = (): void => {
+      if (wanted && inView) void video.play().catch(() => { /* autoplay refused: the poster and the play button stay */ });
+      else video.pause();
+    };
+    const show = (): void => {
+      const on = !video.paused;
+      film.classList.toggle('is-playing', on);
+      toggle.setAttribute('aria-label', on ? 'Sustabdyti filmą' : 'Leisti filmą');
+    };
+    video.addEventListener('play', show);
+    video.addEventListener('pause', show);
+    toggle.addEventListener('click', () => { wanted = video.paused; sync(); });
+    // A film whose layout is not chosen has no box, so it never intersects and never downloads.
+    film.addEventListener('film:view', (e) => { inView = (e as CustomEvent<boolean>).detail; sync(); });
+    io.observe(film);
+  }
+}
+
+/** Review-only: the links beside the heading move the film (also ?video=); the choice is kept in this browser. */
+function filmPick(): void {
+  const pick = document.querySelector<HTMLElement>('[data-film-pick]');
+  if (!pick) return;
+  const buttons = [...pick.querySelectorAll('button')];
+  const set = (v: string | null): void => {
+    if (!buttons.some((b) => b.value === v)) return;
+    document.documentElement.dataset.video = v!;
+    for (const b of buttons) b.setAttribute('aria-pressed', String(b.value === v));
+  };
+  let saved: string | null = null;
+  try { saved = localStorage.getItem('film'); } catch { /* storage blocked */ }
+  set(document.documentElement.dataset.video ?? null);
+  set(saved);
+  set(new URLSearchParams(location.search).get('video'));
+  for (const b of buttons) {
+    b.addEventListener('click', () => {
+      set(b.value);
+      try { localStorage.setItem('film', b.value); } catch { /* storage blocked */ }
+    });
+  }
 }
 
 /** Photo wall: first 12 shown, the rest on request; a photo opens large in a dialog. */
