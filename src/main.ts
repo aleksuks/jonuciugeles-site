@@ -73,6 +73,31 @@ let rect: Rect | null = null;
 let off: Rect = { x: 0, y: 0, w: 0, h: 0 };
 let hiddenAt = 0;
 let lastSlot: HTMLElement | null = null;
+
+/**
+ * Phones: the canvas sits in the page over the active slot (position: absolute, see styles.css) and scrolls natively.
+ * Tracking a fixed canvas from rAF lags the compositor's scroll on touch and makes the bouquet jump.
+ */
+const inPage = matchMedia('(max-width: 899px)');
+let placed = '';
+function placeCanvas(el: HTMLElement, r: DOMRect): void {
+  if (!inPage.matches) {
+    if (placed) { canvas.style.top = canvas.style.height = ''; placed = ''; }
+    return;
+  }
+  const key = `${slots.indexOf(el)}|${r.height}|${innerWidth}`;
+  if (key === placed) return;
+  const bleed = Math.round(r.height * 0.12); // room for the shadow and the loosened fan, more below for the floor
+  canvas.style.top = `${Math.round(r.top + scrollY) - bleed}px`;
+  canvas.style.height = `${Math.round(r.height * 1.5) + bleed}px`; // the floor shadow spills well below the slot
+  placed = key;
+  off = { x: 0, y: 0, w: 0, h: 0 };
+}
+/** A slot's rect in canvas-local pixels. */
+function local(r: DOMRect): Rect {
+  const c = placed ? canvas.getBoundingClientRect() : { left: 0, top: 0 };
+  return { x: r.left - c.left, y: r.top - c.top, w: r.width, h: r.height };
+}
 let envReady = false;
 void stage.ready.then(() => { envReady = true; tuneBackdrop(); });
 stage.onQualityChange(() => tuneBackdrop());
@@ -108,20 +133,20 @@ let last = performance.now();
 function frame(now: number): void {
   const dt = Math.min((now - last) / 1000, 1 / 20);
   last = now;
+  const slot = activeSlot();
+  if (slot) placeCanvas(slot.el, slot.r);
   const W = canvas.clientWidth;
   const H = canvas.clientHeight;
-  const slot = activeSlot();
   // Off every slot: keep riding the last one off-screen while the canvas fades.
   if (!slot && lastSlot && rect) {
-    const r = lastSlot.getBoundingClientRect();
-    rect = { x: r.left, y: r.top, w: r.width, h: r.height };
+    rect = local(lastSlot.getBoundingClientRect());
     rig.setFreeRect(rect, W, H);
   }
 
   if (slot) {
-    const t: Rect = { x: slot.r.left, y: slot.r.top, w: slot.r.width, h: slot.r.height };
+    const t = local(slot.r);
     if (!rect || hiddenAt) off = { x: 0, y: 0, w: 0, h: 0 };
-    else if (slot.el !== lastSlot) off = { x: rect.x - t.x, y: rect.y - t.y, w: rect.w - t.w, h: rect.h - t.h };
+    else if (slot.el !== lastSlot && !placed) off = { x: rect.x - t.x, y: rect.y - t.y, w: rect.w - t.w, h: rect.h - t.h };
     lastSlot = slot.el;
     const k = Math.exp(-8 * dt);
     off = { x: off.x * k, y: off.y * k, w: off.w * k, h: off.h * k };

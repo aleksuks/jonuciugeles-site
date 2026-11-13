@@ -220,6 +220,8 @@ a { color: inherit; }
 
 /* ---------- narrow ---------- */
 @media (max-width: 899px) {
+  /* main.ts places it over the slot in view; the edges fade so the floor shadow never ends in a hard line. */
+  #stage { position: absolute; -webkit-mask-image: linear-gradient(transparent, #000 8%, #000 88%, transparent); mask-image: linear-gradient(transparent, #000 8%, #000 88%, transparent); }
   .nav__links { display: none; }
   .nav__in { justify-content: space-between; }
   .wall { columns: 2; column-gap: 8px; }
