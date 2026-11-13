@@ -49,7 +49,8 @@ interface TierSettings {
 
 const TIER_SETTINGS: Record<QualityTier, TierSettings> = {
   high: { maxPixelRatio: 2, shadowMapSize: 2048, shadowBlurSamples: 20, composer: true, ao: true, aoScale: 1, dof: true, msaa: 4 },
-  medium: { maxPixelRatio: 1.5, shadowMapSize: 1024, shadowBlurSamples: 14, composer: true, ao: true, aoScale: 0.5, dof: false, msaa: 4 },
+  // Medium (phones start here) renders straight to the canvas: the AO/MSAA post chain was what made phones lag.
+  medium: { maxPixelRatio: 1.5, shadowMapSize: 1024, shadowBlurSamples: 10, composer: false, ao: false, aoScale: 1, dof: false, msaa: 0 },
   low: { maxPixelRatio: 1, shadowMapSize: 1024, shadowBlurSamples: 12, composer: false, ao: false, aoScale: 1, dof: false, msaa: 0 },
 };
 

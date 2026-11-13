@@ -225,14 +225,16 @@ a { color: inherit; }
   .wall a { margin-bottom: 8px; }
   .hero__grid, .offer__grid, .order__grid, .grid { grid-template-columns: minmax(0, 1fr); }
   .hero__grid { grid-template-rows: 1fr auto; min-height: calc(100svh - var(--nav)); gap: 0; }
-  .hero__slot { grid-column: 1; grid-row: 1; min-height: 44svh; }
+  /* Bouquet slots run edge to edge on phones: the canvas is full-bleed anyway. */
+  .hero__slot, .offer__slot, .order__slot { grid-column: 1; margin-inline: calc(-1 * var(--gut)); }
+  .hero__slot { grid-row: 1; min-height: 52svh; }
   .hero__text { grid-column: 1; grid-row: 2; padding-bottom: 40px; gap: 20px; }
   .visit__panel, .visit__photo, .offer__text, .order__text, .span-3, .span-4, .span-5 { grid-column: 1; }
   .visit__cols { grid-template-columns: minmax(0, 1fr); }
   .offer { display: block; min-height: 0; }
   .offer__slot { grid-row: 1; min-height: 62svh; margin-bottom: 8px; }
   .reviews__list { grid-template-columns: minmax(0, 1fr); }
-  .order__slot { grid-row: 1; position: static; height: 36svh; min-height: 240px; }
+  .order__slot { grid-row: 1; position: static; height: 44svh; min-height: 280px; }
   .form { grid-template-columns: minmax(0, 1fr); }
   .form__send .btn { width: 100%; }
   .foot__grid { grid-template-columns: minmax(0, 1fr); }

@@ -140,7 +140,8 @@ function frame(now: number): void {
   }
   bouquet.update(dt);
   const prog = bouquet.explodeProgress;
-  const base = 0.52 + Math.min(0.08, Math.max(0, bouquet.flowers.length - 17) * 0.0035);
+  // Phones frame the tied bouquet tighter (the sphere's margin is mostly empty floor); the exploded fan keeps its fit.
+  const base = (0.52 + Math.min(0.08, Math.max(0, bouquet.flowers.length - 17) * 0.0035)) * (W < 900 ? 0.84 : 1);
   rig.setFrameRadius(base + (FRAME_RADIUS_EXPLODED - base) * prog);
   rig.update(dt);
   binding.setProgress(prog);
