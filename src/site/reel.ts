@@ -68,7 +68,6 @@ export function reel(): void {
     text.setAttribute('y', String(H / 2 + baseline - fh / 2));
     text.setAttribute('font-size', String(size));
     spin = up ? ` rotate(-90 ${W / 2} ${H / 2})` : '';
-    video.style.transformOrigin = `${ox}px ${oy}px`;
     ready = true;
     shown = -1;
     draw();
@@ -87,8 +86,6 @@ export function reel(): void {
     if (z === shown) return;
     shown = z;
     text.setAttribute('transform', `translate(${ox} ${oy}) scale(${z}) translate(${-ox} ${-oy})${spin}`);
-    // The film drifts in from slightly closer, so the letters read as a window rather than a stencil.
-    video.style.transform = `scale(${1.18 - 0.18 * t})`;
     stage.classList.toggle('is-open', t >= 1);
   };
 
