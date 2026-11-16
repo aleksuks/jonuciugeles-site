@@ -1,6 +1,6 @@
 /**
- * The shop's rose mark over its film. The section is one screen tall and simply scrolls by (nothing pins), so one swipe
- * carries a phone straight through. The film fills the section from the start; over it sits the wine disc of the
+ * The shop's rose mark over its film. The section is two screens or more tall and its stage sticks (CSS position: sticky,
+ * so the compositor holds it; no scroll is taken over), giving the line a long run. The film fills the section from the start; over it sits the wine disc of the
  * logo, and as the section rises the rose's line draws itself as a cut through the disc (wine where the stem leaves
  * it). By the time the section fills the screen the mark has come at the visitor and they have gone through the line
  * into the film. The film itself (play while on screen, pause button) is handled by shopVideo() in page.ts.
@@ -14,7 +14,6 @@ const TOP = -R - 4; // the mark's extent: disc top to the stem's tail
 const BOTTOM = 181;
 const DIVE = [-15, 56.1]; // a straight run of the stem inside the disc: the zoom goes through here
 const PAD = 24;
-const DIVE_AT = 0.72; // p where the line is done and the dive begins
 
 export function reel(): void {
   const sec = document.querySelector<HTMLElement>('[data-reel]');
@@ -36,7 +35,6 @@ export function reel(): void {
   outside.rect(-1e4, -1e4, 2e4, 2e4);
   outside.arc(0, 0, R, 0, Math.PI * 2);
   const still = matchMedia('(prefers-reduced-motion: reduce)');
-  const nav = document.querySelector<HTMLElement>('.nav');
   let W = 0, H = 0, k = 1, zMax = 1, dpr = 1;
   let shown = '';
   let wine = '#7b2639';
@@ -59,22 +57,22 @@ export function reel(): void {
   const clamp = (v: number): number => Math.min(1, Math.max(0, v));
   const smooth = (t: number): number => t * t * (3 - 2 * t);
   /**
-   * p runs 0 to 1 while the section rises from the bottom of the screen to just under the nav. The mark stays put in the
-   * section (the page's own scrolling carries it, so it never lags the finger), placed so it is mid-screen as the dive starts.
+   * The section is taller than the screen and its stage sticks under the nav (CSS), so the browser's own scrolling holds
+   * the film still while t, the pixels of section risen so far, runs on. The mark sits mid-film: the line starts once the
+   * whole mark is on screen, finishes a little past halfway through the held run, then the dive goes through it.
    */
   const draw = (): void => {
     if (!W) return;
-    const top = sec.getBoundingClientRect().top;
-    const navH = nav?.offsetHeight ?? 0;
-    const p = clamp((innerHeight - top) / (innerHeight - navH));
+    const t = innerHeight - sec.getBoundingClientRect().top;
+    const L = Math.max(1, sec.offsetHeight - H); // the held run
     const markH = (BOTTOM - TOP) * k;
-    // The line starts once the top of the mark (where it begins, at the hook) is well on screen.
-    const from = Math.min(0.5, (markH * 0.6 + PAD) / (innerHeight - navH));
-    const drawn = still.matches ? 1 : smooth(clamp((p - from) / (DIVE_AT - from)));
-    const dive = still.matches ? 0 : clamp((p - DIVE_AT) / (0.98 - DIVE_AT)); // done a hair before p = 1, which scroll rounding can miss
-    const mid = still.matches ? H / 2 : Math.max(markH / 2 + PAD, (DIVE_AT - 0.5) * H);
+    const t0 = Math.min(H * 0.9, H / 2 + markH / 2 + PAD);
+    const t1 = H + L * 0.55;
+    const t2 = H + L * 0.9;
+    const drawn = still.matches ? 1 : smooth(clamp((t - t0) / (t1 - t0)));
+    const dive = still.matches ? 0 : clamp((t - t1) / (t2 - t1));
     const cx = W / 2;
-    const cy = mid - ((TOP + BOTTOM) / 2) * k;
+    const cy = H / 2 - ((TOP + BOTTOM) / 2) * k;
     const z = zMax ** (dive * dive); // starts gently, then the exponential carries it through the line
     const key = `${z}|${drawn}|${cy}`;
     if (key === shown) return;

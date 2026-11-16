@@ -80,14 +80,14 @@ async function run(browser, sc) {
   check('canvas backdrop matches page ground', g0.d <= 3, `${g0.got} vs ${g0.want}`);
   const shots = [await shot('hero')];
   if (!sc.heroOnly) {
-    // The reel scrolls by: f is how far the section has risen (0 entering at the bottom, 1 filling the screen under the nav).
-    const reelAt = (f) => page.evaluate((f) => { const s = document.querySelector('[data-reel]'); const nav = document.querySelector('.nav').offsetHeight; scrollTo({ top: s.getBoundingClientRect().top + scrollY - (innerHeight - f * (innerHeight - nav)), behavior: 'instant' }); }, f);
-    await reelAt(0.6);
+    // The reel: f is how far the tall section has risen, 0 its top entering at the bottom, 1 its bottom reaching the screen's.
+    const reelAt = (f) => page.evaluate((f) => { const s = document.querySelector('[data-reel]'); scrollTo({ top: s.getBoundingClientRect().top + scrollY - (innerHeight - f * s.offsetHeight), behavior: 'instant' }); }, f);
+    await reelAt(0.45);
     await page.waitForTimeout(400);
     shots.push(await shot('reel-mark'));
     const mid = await page.evaluate(() => ({ open: document.querySelector('.reel__stage').classList.contains('is-open'), drawn: document.querySelector('.reel__stage').dataset.drawn }));
     check('reel shows the mark mid-draw', !mid.open && parseFloat(mid.drawn) > 0.01 && parseFloat(mid.drawn) < 0.99, JSON.stringify(mid));
-    await reelAt(1);
+    await reelAt(0.97);
     await frames(3);
     await page.waitForFunction(() => !document.querySelector('.reel video').paused, null, { timeout: 15000 }).catch(() => {});
     const rl = await page.evaluate(() => ({ open: document.querySelector('.reel__stage').classList.contains('is-open'), playing: !document.querySelector('.reel video').paused }));

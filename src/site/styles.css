@@ -109,9 +109,9 @@ a { color: inherit; }
 .visit__addr { font-size: 20px; line-height: 1.5; margin-bottom: 14px; }
 .visit__cols .btn { margin-top: 10px; }
 
-/* ---------- reel: the shop's film under its rose mark (src/site/reel.ts); one screen, nothing pins ---------- */
-.reel { position: relative; height: calc(100svh - var(--nav)); }
-.reel__stage { position: absolute; inset: 0; overflow: hidden; background: #1d2420; }
+/* ---------- reel: the shop's film under its rose mark (src/site/reel.ts); a tall section whose stage sticks ---------- */
+.reel { position: relative; height: calc((100svh - var(--nav)) * 2); }
+.reel__stage { position: sticky; top: var(--nav); height: calc(100svh - var(--nav)); overflow: hidden; background: #1d2420; }
 .reel__stage video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 .reel__mask { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
 .reel__path { position: absolute; }
@@ -133,10 +133,13 @@ a { color: inherit; }
 .reel__stage.is-open .film__toggle, .reel .film__toggle:focus-visible { opacity: 1; }
 /* Reduced motion: no dive; the word holds the poster, the button plays the film inside it. */
 @media (prefers-reduced-motion: reduce) {
+  .reel { height: calc(100svh - var(--nav)); }
   .reel__end::before, .reel__line { display: none; }
   .reel__end { justify-content: flex-end; }
   .reel .film__toggle { opacity: 1; }
 }
+/* Phones: the upright film gets the longest run. */
+@media (max-width: 899px) and (prefers-reduced-motion: no-preference) { .reel { height: calc((100svh - var(--nav)) * 2.6); } }
 
 .film__toggle {
   position: absolute; left: 12px; bottom: 12px; width: 44px; height: 44px; padding: 0; border: 0; border-radius: 50%;
