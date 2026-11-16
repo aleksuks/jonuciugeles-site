@@ -5,7 +5,7 @@
  */
 const WORD = 'Gėlės';
 const STEM = 2; // the "l": its stem is the widest straight run in the word, so the dive lands inside the film
-const FONT = (px: number): string => `900 ${px}px Fraunces, Georgia, serif`;
+const FONT = (px: number): string => `800 ${px}px 'Bodoni Moda Display', 'Didot', Georgia, serif`;
 
 export function reel(): void {
   const sec = document.querySelector<HTMLElement>('[data-reel]');
@@ -38,7 +38,7 @@ export function reel(): void {
     const c = document.createElement('canvas').getContext('2d', { willReadFrequently: true });
     if (!c) return;
     c.font = FONT(100);
-    const size = Math.min((fw * (up ? 0.86 : 0.9)) / (c.measureText(WORD).width / 100), fh * (up ? 0.8 : 0.62));
+    const size = Math.min((fw * (up ? 0.76 : 0.9)) / (c.measureText(WORD).width / 100), fh * (up ? 0.8 : 0.62));
     c.canvas.width = fw;
     c.canvas.height = fh;
     c.font = FONT(size);
@@ -74,15 +74,14 @@ export function reel(): void {
   };
 
   const clamp = (v: number): number => Math.min(1, Math.max(0, v));
-  const ease = (t: number): number => (t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2);
   let shown = -1;
-  /** 0 to 0.14 holds the word, 0.14 to 0.78 dives, the rest holds the open film. */
+  /** The dive starts with the first scroll and runs to 0.8; the rest holds the open film. Easing out only at the end. */
   const draw = (): void => {
     if (!ready) return;
     const travel = sec.offsetHeight - H;
     const p = still.matches || travel <= 0 ? 0 : clamp(-sec.getBoundingClientRect().top / travel);
-    const t = ease(clamp((p - 0.14) / 0.64));
-    const z = zMax ** t; // exponential: the dive reads as one steady speed
+    const t = 1 - (1 - clamp(p / 0.8)) ** 1.5;
+    const z = zMax ** t; // exponential: the dive reads as one steady speed from the first pixel
     if (z === shown) return;
     shown = z;
     text.setAttribute('transform', `translate(${ox} ${oy}) scale(${z}) translate(${-ox} ${-oy})${spin}`);

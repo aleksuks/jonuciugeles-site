@@ -1,4 +1,6 @@
 @font-face { font-family: 'Fraunces'; src: url('./fonts/Fraunces.ttf') format('truetype'); font-weight: 100 900; font-style: normal; font-display: swap; }
+/* Bodoni Moda, pinned to 800 / opsz 96 and cut to Latin + Lithuanian: only the reel's word uses it. */
+@font-face { font-family: 'Bodoni Moda Display'; src: url('./fonts/BodoniModa-Display.ttf') format('truetype'); font-weight: 400 900; font-display: block; }
 @font-face { font-family: 'Instrument Sans'; src: url('./fonts/InstrumentSans.ttf') format('truetype'); font-weight: 400 700; font-stretch: 75% 100%; font-display: swap; }
 
 :root {
@@ -110,11 +112,11 @@ a { color: inherit; }
 .visit__cols .btn { margin-top: 10px; }
 
 /* ---------- reel: the shop's film inside "Gėlės" (src/site/reel.ts) ---------- */
-.reel { position: relative; height: 280svh; background: var(--ground); }
+.reel { position: relative; height: 240svh; background: var(--ground); }
 .reel__stage { position: sticky; top: var(--nav); height: calc(100svh - var(--nav)); overflow: hidden; background: #1d2420; }
 .reel__stage video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 .reel__mask { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
-.reel__mask text { font-family: var(--serif); font-weight: 900; font-variation-settings: 'opsz' 144, 'SOFT' 50, 'WONK' 0; }
+.reel__mask text { font-family: 'Bodoni Moda Display', 'Didot', Georgia, serif; font-weight: 800; }
 .reel__ground { fill: var(--ground); }
 /* Fully open: the ground is off-screen anyway, so stop painting the mask; the line and the button come in. */
 .reel__stage.is-open .reel__mask { visibility: hidden; }
