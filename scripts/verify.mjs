@@ -50,6 +50,8 @@ async function run(browser, sc) {
     await settle(1.5, 4);
   };
 
+  // Never email the shop from a test run: the order form's send is answered here (Web3Forms reply, CORS included).
+  await page.route('https://api.web3forms.com/**', (r) => r.fulfill({ status: 200, contentType: 'application/json', headers: { 'access-control-allow-origin': '*', 'access-control-allow-headers': '*' }, body: '{"success":true}' }));
   await page.goto(`${BASE}/?quality=${sc.quality}&seed=4242`);
   await page.waitForFunction(() => window.__flowers && window.__flowers.stage.environment !== 'none', null, { timeout: 120000 });
   await settle(3, 4);
@@ -78,12 +80,14 @@ async function run(browser, sc) {
   check('canvas backdrop matches page ground', g0.d <= 3, `${g0.got} vs ${g0.want}`);
   const shots = [await shot('hero')];
   if (!sc.heroOnly) {
-    // The reel: the film inside "Gėlės" at the top of its pinned run, fully opened near the end.
-    const reelAt = (f) => page.evaluate((f) => { const s = document.querySelector('[data-reel]'); const st = s.querySelector('.reel__stage'); scrollTo({ top: s.getBoundingClientRect().top + scrollY - (innerHeight - st.offsetHeight) + f * (s.offsetHeight - st.offsetHeight), behavior: "instant" }); }, f);
-    await reelAt(0);
+    // The reel scrolls by: f is how far the section has risen (0 entering at the bottom, 1 filling the screen under the nav).
+    const reelAt = (f) => page.evaluate((f) => { const s = document.querySelector('[data-reel]'); const nav = document.querySelector('.nav').offsetHeight; scrollTo({ top: s.getBoundingClientRect().top + scrollY - (innerHeight - f * (innerHeight - nav)), behavior: 'instant' }); }, f);
+    await reelAt(0.6);
     await page.waitForTimeout(400);
-    shots.push(await shot('reel-word'));
-    await reelAt(0.9);
+    shots.push(await shot('reel-mark'));
+    const mid = await page.evaluate(() => ({ open: document.querySelector('.reel__stage').classList.contains('is-open'), drawn: getComputedStyle(document.querySelector('.reel__mark')).strokeDashoffset }));
+    check('reel shows the mark mid-draw', !mid.open && parseFloat(mid.drawn) > 0.01 && parseFloat(mid.drawn) < 0.99, JSON.stringify(mid));
+    await reelAt(1);
     await frames(3);
     await page.waitForFunction(() => !document.querySelector('.reel video').paused, null, { timeout: 15000 }).catch(() => {});
     const rl = await page.evaluate(() => ({ open: document.querySelector('.reel__stage').classList.contains('is-open'), playing: !document.querySelector('.reel video').paused }));
@@ -124,6 +128,7 @@ async function run(browser, sc) {
     await page.fill('#f-address', 'Artojų g. 3, Teleičiai');
     await page.fill('#f-message', 'Rožių puokštė gimtadieniui');
     await page.click('#order-form button[type=submit]');
+    await page.waitForFunction(() => document.querySelector('.form__status').textContent.trim() !== '', null, { timeout: 15000 }).catch(() => {});
     const status = await page.textContent('.form__status');
     check('form reports its state', /neprijungta|išsiųstas/.test(status ?? ''), status);
     shots.push(await shot('order'));

@@ -1,6 +1,4 @@
 @font-face { font-family: 'Fraunces'; src: url('./fonts/Fraunces.ttf') format('truetype'); font-weight: 100 900; font-style: normal; font-display: swap; }
-/* Bodoni Moda, pinned to 800 / opsz 96 and cut to Latin + Lithuanian: only the reel's word uses it. */
-@font-face { font-family: 'Bodoni Moda Display'; src: url('./fonts/BodoniModa-Display.ttf') format('truetype'); font-weight: 400 900; font-display: block; }
 @font-face { font-family: 'Instrument Sans'; src: url('./fonts/InstrumentSans.ttf') format('truetype'); font-weight: 400 700; font-stretch: 75% 100%; font-display: swap; }
 
 :root {
@@ -111,13 +109,13 @@ a { color: inherit; }
 .visit__addr { font-size: 20px; line-height: 1.5; margin-bottom: 14px; }
 .visit__cols .btn { margin-top: 10px; }
 
-/* ---------- reel: the shop's film inside "Gėlės" (src/site/reel.ts) ---------- */
-.reel { position: relative; height: 240svh; background: var(--ground); }
-.reel__stage { position: sticky; top: var(--nav); height: calc(100svh - var(--nav)); overflow: hidden; background: #1d2420; }
+/* ---------- reel: the shop's film under its rose mark (src/site/reel.ts); one screen, nothing pins ---------- */
+.reel { position: relative; height: calc(100svh - var(--nav)); }
+.reel__stage { position: absolute; inset: 0; overflow: hidden; background: #1d2420; }
 .reel__stage video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 .reel__mask { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
-.reel__mask text { font-family: 'Bodoni Moda Display', 'Didot', Georgia, serif; font-weight: 800; }
-.reel__ground { fill: var(--ground); }
+.reel__wine { fill: var(--accent); }
+.reel__mark { fill: none; stroke-width: 11.7; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 1 2; }
 /* Fully open: the ground is off-screen anyway, so stop painting the mask; the line and the button come in. */
 .reel__stage.is-open .reel__mask { visibility: hidden; }
 .reel__end {
@@ -136,8 +134,6 @@ a { color: inherit; }
 .reel__stage.is-open .film__toggle, .reel .film__toggle:focus-visible { opacity: 1; }
 /* Reduced motion: no dive; the word holds the poster, the button plays the film inside it. */
 @media (prefers-reduced-motion: reduce) {
-  .reel { height: auto; }
-  .reel__stage { position: relative; top: 0; height: min(80svh, 720px); }
   .reel__end::before, .reel__line { display: none; }
   .reel__end { justify-content: flex-end; }
   .reel .film__toggle { opacity: 1; }
