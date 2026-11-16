@@ -53,10 +53,12 @@ export function reel(): void {
     const top = sec.getBoundingClientRect().top;
     const navH = nav?.offsetHeight ?? 0;
     const p = clamp((innerHeight - top) / (innerHeight - navH));
-    const drawn = still.matches ? 1 : smooth(clamp((p - 0.12) / 0.56));
-    const dive = still.matches ? 0 : clamp((p - 0.64) / 0.34); // done a hair before p = 1, which scroll rounding can miss
-    // The mark rides the middle of the part of the section on screen, kept whole inside the section.
     const markH = (BOTTOM - TOP) * k;
+    // The line starts once the top of the mark (where it begins, at the hook) is well on screen, not while it is still below.
+    const from = Math.min(0.5, (markH * 0.6 + PAD) / (innerHeight - navH));
+    const drawn = still.matches ? 1 : smooth(clamp((p - from) / (0.72 - from)));
+    const dive = still.matches ? 0 : clamp((p - 0.72) / 0.26); // done a hair before p = 1, which scroll rounding can miss
+    // The mark rides the middle of the part of the section on screen, kept whole inside the section.
     const seen = (Math.max(0, navH - top) + Math.min(H, innerHeight - top)) / 2;
     const mid = still.matches ? H / 2 : Math.min(H - markH / 2 - PAD, Math.max(markH / 2 + PAD, seen));
     const cx = W / 2;
