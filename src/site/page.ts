@@ -1,5 +1,6 @@
 import { connected, readForm, send, validate, type Errors } from './inquiry';
 import { loadReviews } from './reviews';
+import { reel } from './reel';
 
 interface Hooks {
   loosen(amount: number): void;
@@ -29,6 +30,7 @@ export function initSite(h: Hooks): void {
   onScroll();
 
   gallery();
+  reel();
   shopVideo();
   openNow();
   void loadReviews();
@@ -37,11 +39,10 @@ export function initSite(h: Hooks): void {
 }
 
 /**
- * The shop's films in "Mes esame". A film downloads and plays only while it is on screen and stops when it leaves;
+ * The shop's film (the reel under the hero). A film downloads and plays only while it is on screen and stops when it leaves;
  * its button pauses it for good. Reduced motion or data saver: the poster stands until the visitor presses play.
  */
 function shopVideo(): void {
-  filmPick();
   const quiet = matchMedia('(prefers-reduced-motion: reduce)').matches
     || (navigator as { connection?: { saveData?: boolean } }).connection?.saveData === true;
   const io = new IntersectionObserver((entries) => {
@@ -66,32 +67,8 @@ function shopVideo(): void {
     video.addEventListener('play', show);
     video.addEventListener('pause', show);
     toggle.addEventListener('click', () => { wanted = video.paused; sync(); });
-    // A film whose layout is not chosen has no box, so it never intersects and never downloads.
     film.addEventListener('film:view', (e) => { inView = (e as CustomEvent<boolean>).detail; sync(); });
     io.observe(film);
-  }
-}
-
-/** Review-only: the links beside the heading move the film (also ?video=); the choice is kept in this browser. */
-function filmPick(): void {
-  const pick = document.querySelector<HTMLElement>('[data-film-pick]');
-  if (!pick) return;
-  const buttons = [...pick.querySelectorAll('button')];
-  const set = (v: string | null): void => {
-    if (!buttons.some((b) => b.value === v)) return;
-    document.documentElement.dataset.video = v!;
-    for (const b of buttons) b.setAttribute('aria-pressed', String(b.value === v));
-  };
-  let saved: string | null = null;
-  try { saved = localStorage.getItem('film'); } catch { /* storage blocked */ }
-  set(document.documentElement.dataset.video ?? null);
-  set(saved);
-  set(new URLSearchParams(location.search).get('video'));
-  for (const b of buttons) {
-    b.addEventListener('click', () => {
-      set(b.value);
-      try { localStorage.setItem('film', b.value); } catch { /* storage blocked */ }
-    });
   }
 }
 

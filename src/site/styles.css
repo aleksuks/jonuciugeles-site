@@ -109,9 +109,38 @@ a { color: inherit; }
 .visit__addr { font-size: 20px; line-height: 1.5; margin-bottom: 14px; }
 .visit__cols .btn { margin-top: 10px; }
 
-/* ---------- film: the shop's own footage in "Mes esame"; html[data-video] places it (salia | apacioje | be) ---------- */
-.film { display: none; }
-.film video { display: block; width: 100%; height: 100%; object-fit: cover; }
+/* ---------- reel: the shop's film inside "Gėlės" (src/site/reel.ts) ---------- */
+.reel { position: relative; height: 280svh; background: var(--ground); }
+.reel__stage { position: sticky; top: var(--nav); height: calc(100svh - var(--nav)); overflow: hidden; background: #1d2420; }
+.reel__stage video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transform: scale(1.18); }
+.reel__mask { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.reel__mask text { font-family: var(--serif); font-weight: 900; font-variation-settings: 'opsz' 144, 'SOFT' 50, 'WONK' 0; }
+.reel__ground { fill: var(--ground); }
+/* Fully open: the ground is off-screen anyway, so stop painting the mask; the line and the button come in. */
+.reel__stage.is-open .reel__mask { visibility: hidden; }
+.reel__end {
+  position: absolute; left: 0; right: 0; bottom: 0; padding-bottom: clamp(24px, 4vw, 48px);
+  display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; pointer-events: none;
+}
+.reel__end::before { content: ''; position: absolute; inset: -120px 0 0; z-index: -1; background: linear-gradient(transparent, rgba(20, 24, 21, 0.55)); opacity: 0; transition: opacity 600ms ease; }
+.reel__line {
+  font: 380 clamp(26px, 3.4vw, 48px)/1.1 var(--serif); font-variation-settings: 'SOFT' 60, 'WONK' 1; letter-spacing: -0.02em;
+  color: #fbf8f2; max-width: 18ch; text-wrap: balance;
+  opacity: 0; transform: translateY(16px); filter: blur(4px);
+  transition: opacity 500ms ease, transform 700ms var(--ease-out), filter 500ms ease;
+}
+.reel__stage.is-open .reel__end::before, .reel__stage.is-open .reel__line { opacity: 1; transform: none; filter: none; }
+.reel .film__toggle { position: static; flex: none; pointer-events: auto; opacity: 0; transition: opacity 400ms ease, transform 160ms var(--ease-out), background-color 200ms ease; }
+.reel__stage.is-open .film__toggle, .reel .film__toggle:focus-visible { opacity: 1; }
+/* Reduced motion: no dive; the word holds the poster, the button plays the film inside it. */
+@media (prefers-reduced-motion: reduce) {
+  .reel { height: auto; }
+  .reel__stage { position: relative; top: 0; height: min(80svh, 720px); }
+  .reel__end::before, .reel__line { display: none; }
+  .reel__end { justify-content: flex-end; }
+  .reel .film__toggle { opacity: 1; }
+}
+
 .film__toggle {
   position: absolute; left: 12px; bottom: 12px; width: 44px; height: 44px; padding: 0; border: 0; border-radius: 50%;
   display: grid; place-items: center; background: var(--ground); color: var(--ink); cursor: pointer;
@@ -121,28 +150,6 @@ a { color: inherit; }
 .film__toggle svg { grid-area: 1 / 1; width: 16px; height: 16px; fill: currentColor; transition: opacity 180ms ease, transform 180ms var(--ease-out), filter 180ms ease; }
 .film:not(.is-playing) .film__pause, .film.is-playing .film__play { opacity: 0; transform: scale(0.8); filter: blur(2px); }
 @media (hover: hover) and (pointer: fine) { .film__toggle:hover { background: var(--field-hi); } }
-/* apacioje: the counter film across the section under the address and photo, cropped to a wide band. */
-[data-video="apacioje"] .film--wide { display: block; grid-column: 1 / -1; aspect-ratio: 2.35; }
-[data-video="apacioje"] .film--wide video { object-position: 50% 12%; }
-@media (min-width: 900px) {
-  /* salia: address, shopfront and the portrait film in one row, photo and film at one height in their own ratios. */
-  [data-video="salia"] .visit__grid { --film-h: clamp(480px, 40vw, 540px); grid-template-columns: minmax(0, 1fr) auto; }
-  /* Tablet: the address panel across the top, then the shopfront (cropped wide) beside the film. */
-  [data-video="salia"] .visit__panel { grid-column: 1 / -1; }
-  [data-video="salia"] .visit__photo { grid-column: auto; height: var(--film-h); aspect-ratio: auto; }
-  [data-video="salia"] .visit__photo img { object-position: 50% 20%; }
-  [data-video="salia"] .film--portrait { display: block; grid-column: auto; height: var(--film-h); width: calc(var(--film-h) * 9 / 16); aspect-ratio: auto; }
-}
-@media (min-width: 1180px) {
-  [data-video="salia"] .visit__grid { grid-template-columns: minmax(0, 1fr) auto auto; }
-  [data-video="salia"] .visit__panel { grid-column: auto; padding: clamp(28px, 3vw, 40px); gap: 20px; }
-  [data-video="salia"] .visit__photo { width: calc(var(--film-h) * 4 / 5); }
-  [data-video="salia"] .visit__photo img { object-position: 50% 50%; }
-  [data-video="salia"] .visit__cols { grid-template-columns: minmax(0, 1fr); }
-}
-.film-pick { display: flex; align-items: baseline; gap: 0 20px; font-size: 15px; color: var(--ink-soft); }
-.film-pick button { font: inherit; color: inherit; background: none; border: 0; padding: 0; min-height: 44px; cursor: pointer; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 5px; }
-.film-pick button[aria-pressed="true"] { color: var(--ink); font-weight: 600; text-decoration: none; }
 
 .open-now { font-weight: 500; min-height: 1.6em; }
 .open-now::before { content: ''; display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: currentColor; margin-right: 10px; vertical-align: 2px; }
@@ -270,12 +277,6 @@ a { color: inherit; }
   .hero__text { grid-column: 1; grid-row: 2; padding-bottom: 40px; gap: 20px; }
   .visit__panel, .visit__photo, .offer__text, .order__text, .span-3, .span-4, .span-5 { grid-column: 1; }
   .visit__cols { grid-template-columns: minmax(0, 1fr); }
-  .film { grid-column: 1; }
-  /* salia on a phone: the shopfront as a square crop (sign, windows, florist), then the film upright. */
-  [data-video="salia"] .visit__photo { aspect-ratio: 1; }
-  [data-video="salia"] .visit__photo img { object-position: 50% 30%; }
-  [data-video="salia"] .film--portrait { display: block; aspect-ratio: 4 / 5; }
-  [data-video="apacioje"] .film--wide { grid-column: 1; aspect-ratio: 16 / 9; }
   .offer { display: block; min-height: 0; }
   .offer__slot { grid-row: 1; min-height: 62svh; margin-bottom: 8px; }
   .reviews__list { grid-template-columns: minmax(0, 1fr); }
@@ -286,6 +287,7 @@ a { color: inherit; }
   .foot__logo { grid-row: auto; width: 150px; }
   .foot__legal { grid-column: 1; }
   .foot { padding-bottom: calc(104px + env(safe-area-inset-bottom)); }
+  .reel__end { padding-bottom: calc(92px + env(safe-area-inset-bottom)); }
   .bar {
     display: grid; grid-template-columns: 1fr 1.4fr; gap: 10px;
     position: fixed; left: 0; right: 0; bottom: 0; z-index: 6;

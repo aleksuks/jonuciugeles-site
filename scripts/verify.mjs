@@ -78,6 +78,17 @@ async function run(browser, sc) {
   check('canvas backdrop matches page ground', g0.d <= 3, `${g0.got} vs ${g0.want}`);
   const shots = [await shot('hero')];
   if (!sc.heroOnly) {
+    // The reel: the film inside "Gėlės" at the top of its pinned run, fully opened near the end.
+    const reelAt = (f) => page.evaluate((f) => { const s = document.querySelector('[data-reel]'); const st = s.querySelector('.reel__stage'); scrollTo({ top: s.getBoundingClientRect().top + scrollY - (innerHeight - st.offsetHeight) + f * (s.offsetHeight - st.offsetHeight), behavior: "instant" }); }, f);
+    await reelAt(0);
+    await page.waitForTimeout(400);
+    shots.push(await shot('reel-word'));
+    await reelAt(0.9);
+    await frames(3);
+    await page.waitForFunction(() => !document.querySelector('.reel video').paused, null, { timeout: 15000 }).catch(() => {});
+    const rl = await page.evaluate(() => ({ open: document.querySelector('.reel__stage').classList.contains('is-open'), playing: !document.querySelector('.reel video').paused }));
+    check('reel opens into the playing film', rl.open && rl.playing, JSON.stringify(rl));
+    shots.push(await shot('reel-open'));
     await scrollTo('#mes-esame');
     shots.push(await shot('visit'));
     await scrollTo('#paslaugos');
