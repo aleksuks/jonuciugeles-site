@@ -85,7 +85,7 @@ async function run(browser, sc) {
     await reelAt(0.6);
     await page.waitForTimeout(400);
     shots.push(await shot('reel-mark'));
-    const mid = await page.evaluate(() => ({ open: document.querySelector('.reel__stage').classList.contains('is-open'), drawn: getComputedStyle(document.querySelector('.reel__mark')).strokeDashoffset }));
+    const mid = await page.evaluate(() => ({ open: document.querySelector('.reel__stage').classList.contains('is-open'), drawn: document.querySelector('.reel__stage').dataset.drawn }));
     check('reel shows the mark mid-draw', !mid.open && parseFloat(mid.drawn) > 0.01 && parseFloat(mid.drawn) < 0.99, JSON.stringify(mid));
     await reelAt(1);
     await frames(3);
